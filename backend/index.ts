@@ -1,15 +1,14 @@
 // ESM
 import Fastify from "fastify";
+import healthCheckRoutes from "./routes/healthcheck.routes.js";
 
 const fastify = Fastify({
 	logger: true,
 });
 
-// Declare a route
-fastify.get("/", function (request, reply) {
-	console.log("request", request);
-	reply.send({ hello: "world" });
-});
+// Register routes
+fastify.register(healthCheckRoutes);
+// fastify.register(supabase);
 
 // Run the server!
 fastify.listen(
