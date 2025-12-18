@@ -5,7 +5,7 @@
 	"main": "index.ts",
 	"type": "module",
 	"scripts": {
-		"build": "tsc",
+		"build": "cd ../shared && npm run build && cd ../backend && tsc",
 		"start": "tsc && node ./bin/index.js",
 		"dev": "nodemon --exec tsx ./index.ts",
 		"test": "test"
@@ -13,6 +13,7 @@
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
+		"@know-ledge/shared": "*",
 		"@supabase/supabase-js": "^2.89.0",
 		"dotenv": "^17.2.3",
 		"fastify": "^5.6.2",
