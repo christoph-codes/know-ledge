@@ -5,9 +5,6 @@
 		"lib": ["es2019"],
 		"module": "ES2020",
 		"moduleResolution": "node",
-		"paths": {
-			"*": ["./*"]
-		},
 		"rootDir": "./",
 		"resolveJsonModule": true /* Enable importing .json files. */,
 		"outDir": "./bin" /* Specify an output folder for all emitted files. */,
