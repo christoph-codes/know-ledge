@@ -7,7 +7,7 @@ export interface User {
 }
 
 export interface HealthCheckResponse {
-	status: 'ok' | 'error';
+	status: "ok" | "error";
 	timestamp: string;
 	message?: string;
 }
