@@ -2,7 +2,7 @@
 import "dotenv/config";
 import Fastify from "fastify";
 import healthCheckRoutes from "./routes/healthcheck.routes.js";
-import supabase from "plugins/supabase";
+import supabase from "./plugins/supabase.js";
 
 const fastify = Fastify({
 	logger: true,
