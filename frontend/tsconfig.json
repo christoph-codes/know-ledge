@@ -1,45 +1,45 @@
 {
-	"compilerOptions": {
-		"target": "ES2022",
-		"module": "ESNext",
-		"strict": true, // master switch
-		"alwaysStrict": true,
-		"lib": ["dom", "dom.iterable", "esnext"],
-		"allowJs": false,
-		"skipLibCheck": true,
-		"noEmit": true,
-		"esModuleInterop": true,
-		"moduleResolution": "bundler",
-		"resolveJsonModule": true,
-		"isolatedModules": true,
-		"jsx": "react-jsx",
-		"incremental": true,
-		"noImplicitAny": true, // no implicit anys
-		"strictNullChecks": true, // null must be explicit
-		"exactOptionalPropertyTypes": true, // like C# nullable/optionals
-		"noImplicitThis": true,
-		"noImplicitOverride": true, // like C# override keyword
-		"noUnusedLocals": true,
-		"noUnusedParameters": true,
-		"noFallthroughCasesInSwitch": true,
-		"noUncheckedIndexedAccess": true, // indexer returns T | undefined
-		"useUnknownInCatchVariables": true,
-		"plugins": [
-			{
-				"name": "next"
-			}
-		],
-		"paths": {
-			"@/*": ["./*"]
-		}
-	},
-	"include": [
-		"next-env.d.ts",
-		"**/*.ts",
-		"**/*.tsx",
-		".next/types/**/*.ts",
-		".next/dev/types/**/*.ts",
-		"**/*.mts"
-	],
-	"exclude": ["node_modules"]
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "strict": true, // master switch
+    "alwaysStrict": true,
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": false,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "incremental": true,
+    "noImplicitAny": true, // no implicit anys
+    "strictNullChecks": true, // null must be explicit
+    "exactOptionalPropertyTypes": true, // like C# nullable/optionals
+    "noImplicitThis": true,
+    "noImplicitOverride": true, // like C# override keyword
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true, // indexer returns T | undefined
+    "useUnknownInCatchVariables": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    "**/*.mts"
+  ],
+  "exclude": ["node_modules"]
 }

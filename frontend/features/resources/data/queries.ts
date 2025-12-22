@@ -1,0 +1,48 @@
+export const getResourceTypes = (): string[] => {
+  return ["Article", "Code Snippet", "Learning Resource"];
+};
+
+export const getTags = (): string[] => {
+  return [
+    "C#",
+    "NextJS",
+    "JavaScript",
+    "TypeScript",
+    "Python",
+    "Java",
+    "Go",
+    "Rust",
+    "Ruby",
+    "PHP",
+    "Swift",
+    "Kotlin",
+    "HTML",
+    "CSS",
+    "React",
+    "Vue",
+    "Angular",
+    "Node.js",
+    "Django",
+    "Flask",
+    "Spring",
+    "Docker",
+    "Kubernetes",
+    "AWS",
+    "Azure",
+    "GCP",
+    "SQL",
+    "NoSQL",
+    "GraphQL",
+    "REST API",
+    "Open Source",
+    "Web Development",
+    "Data Science",
+    "Machine Learning",
+    "DevOps",
+    "Mobile Development",
+    "Game Development",
+    "UI/UX Design",
+    "Cloud Computing",
+    "Cybersecurity",
+  ];
+};
