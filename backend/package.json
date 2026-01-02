@@ -5,7 +5,8 @@
 	"main": "index.ts",
 	"type": "module",
 	"scripts": {
-		"build": "cd ../shared && npm run build && cd ../backend && tsc",
+		"build": "npm run build:shared && tsc",
+		"build:shared": "test -d ../shared && cd ../shared && npm install && npm run build || echo 'Shared types not found, skipping'",
 		"start": "tsc && node ./bin/index.js",
 		"dev": "nodemon --exec tsx ./index.ts",
 		"test": "test"

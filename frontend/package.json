@@ -4,7 +4,9 @@
 	"private": true,
 	"scripts": {
 		"dev": "next dev",
-		"build": "cd ../shared && npm run build && cd ../frontend && next build",
+		"build": "npm run build:shared && next build",
+		"build:shared": "if [ -d ../shared ]; then cd ../shared && npm install && npm run build; fi",
+		"preinstall": "if [ -d ../shared ]; then cd ../shared && npm install && npm run build; fi",
 		"start": "next start",
 		"lint": "eslint"
 	},
