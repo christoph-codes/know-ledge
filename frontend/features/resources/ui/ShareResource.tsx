@@ -25,14 +25,19 @@ import {
 import { TagInputAutocomplete } from "@/features/resources/ui/TagInputAutocomplete";
 import { useState } from "react";
 import { CodeSnippetInput } from "@/features/resources/ui/CodeSnippetInput";
+import { createResource } from "@/features/resources/server/create-resource.action";
+import { Resource } from "@/features/resources/domain/models";
 
 export const ShareResource = () => {
   const resourceTypes = getResourceTypes();
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [codeSnippet, setCodeSnippet] = useState<string>("");
   const [selectedLanguage, setSelectedLanguage] =
-    useState<string>("javascript");
- const [resourceType, setResourceType] = useState<string>("--");
+    useState<string>("typescript");
+ const [resourceType, setResourceType] = useState<string>("Article");
+ const [title, setTitle] = useState<string>("");
+ const [description, setDescription] = useState<string>("");
+ const [url, setUrl] = useState<string>("");
 
  const isCodeSnippet = resourceType === "Code Snippet";
 
@@ -47,7 +52,30 @@ export const ShareResource = () => {
     "Database",
   ];
 
+  const saveResource = async () => {
 
+    const resource: Resource = {
+      title: title,
+      description: description,
+      tags: selectedTags,
+      resourceType: resourceType,
+      url: url,
+      snippet: codeSnippet,
+      language: selectedLanguage,
+    };
+
+    await createResource(resource);
+  }
+
+  const clearForm = () => {
+    setTitle("");
+    setDescription("");
+    setSelectedTags([]);
+    setCodeSnippet("");
+    setSelectedLanguage("typescript");
+    setResourceType("Article");
+    setUrl("");
+  }
 
   return (
     <Sheet>
@@ -90,12 +118,20 @@ export const ShareResource = () => {
 
             <div>
               <label>Title</label>
-              <Input placeholder="Enter a descriptive title" />
+              <Input
+                placeholder="Enter a descriptive title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+              />
             </div>
 
             <div>
               <label>Description</label>
-              <Textarea placeholder="Enter a detailed description" />
+              <Textarea
+                placeholder="Enter a detailed description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
             </div>
 
             <div>
@@ -107,19 +143,40 @@ export const ShareResource = () => {
               />
             </div>
 
-            {isCodeSnippet && <CodeSnippetInput
-              value={codeSnippet}
-              onChange={setCodeSnippet}
-              language={selectedLanguage}
-              onLanguageChange={setSelectedLanguage}
-            />}
+            {isCodeSnippet && (
+              <CodeSnippetInput
+                value={codeSnippet}
+                onChange={setCodeSnippet}
+                language={selectedLanguage}
+                onLanguageChange={setSelectedLanguage}
+              />
+            )}
+
+            {!isCodeSnippet && (
+              <div>
+                <label>Article URL</label>
+              <Input
+                placeholder="Enter a URL"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+              />
+              </div>
+            )}
           </div>
         </div>
         <SheetFooter>
-          <Button type="submit">Save changes</Button>
-          <SheetClose asChild>
-            <Button variant="outline">Close</Button>
-          </SheetClose>
+          <div className={"border-t"}>
+            <div className={"mt-2 flex justify-between gap-2"}>
+              <SheetClose asChild>
+                <Button variant="outline" className={"w-44"} onClick={clearForm}>
+                  Cancel
+                </Button>
+              </SheetClose>
+              <Button type="submit" className={"w-44"} onClick={saveResource}>
+                Share
+              </Button>
+            </div>
+          </div>
         </SheetFooter>
       </SheetContent>
     </Sheet>
