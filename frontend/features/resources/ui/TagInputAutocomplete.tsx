@@ -112,7 +112,7 @@ export function TagInputAutocomplete({
     }
 
     if (e.key === "Backspace" && !draft && value.length) {
-      removeTag(value[value.length - 1]);
+      removeTag(value[value.length - 1] ?? "");
       return;
     }
 
