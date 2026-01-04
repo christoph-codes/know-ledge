@@ -24,10 +24,17 @@ import {
 } from "@/shared/ui/sheet";
 import { TagInputAutocomplete } from "@/features/resources/ui/TagInputAutocomplete";
 import { useState } from "react";
+import { CodeSnippetInput } from "@/features/resources/ui/CodeSnippetInput";
 
 export const ShareResource = () => {
   const resourceTypes = getResourceTypes();
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [codeSnippet, setCodeSnippet] = useState<string>("");
+  const [selectedLanguage, setSelectedLanguage] =
+    useState<string>("javascript");
+ const [resourceType, setResourceType] = useState<string>("--");
+
+ const isCodeSnippet = resourceType === "Code Snippet";
 
   const availableTags = [
     "React",
@@ -39,6 +46,8 @@ export const ShareResource = () => {
     "API",
     "Database",
   ];
+
+
 
   return (
     <Sheet>
@@ -57,12 +66,16 @@ export const ShareResource = () => {
         </SheetHeader>
         <div className={"mx-4"}>
           <div className="flex flex-col gap-4">
-            <Select>
+            <Select onValueChange={setResourceType}>
               <SelectTrigger className="w-full">
                 <SelectValue
                   className={"w-full"}
                   placeholder="Select Resource Type"
-                />
+                >
+                  {resourceType !== "--"
+                    ? resourceType
+                    : "Select Resource Type"}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent className="mt-10">
                 <SelectGroup>
@@ -91,9 +104,15 @@ export const ShareResource = () => {
                 onChange={setSelectedTags}
                 suggestions={availableTags}
                 placeholder={"Add tags"}
-
               />
             </div>
+
+            {isCodeSnippet && <CodeSnippetInput
+              value={codeSnippet}
+              onChange={setCodeSnippet}
+              language={selectedLanguage}
+              onLanguageChange={setSelectedLanguage}
+            />}
           </div>
         </div>
         <SheetFooter>
