@@ -25,7 +25,7 @@ import {
 import { TagInputAutocomplete } from "@/features/resources/ui/TagInputAutocomplete";
 import { useState } from "react";
 import { CodeSnippetInput } from "@/features/resources/ui/CodeSnippetInput";
-import { createResource } from "@/features/resources/server/create-resource.action";
+import { createResource } from "@/features/resources/server/resource.action";
 import { Resource } from "@/features/resources/domain/models";
 
 export const ShareResource = () => {
