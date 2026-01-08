@@ -1,3 +1,4 @@
+const baseUrl = process.env.NEXT_PUBLIC_RENDER_URL || "";
 /**
  * The function `fetchRender` asynchronously fetches data from a specified path using the Render URL
  * and returns the JSON response.
@@ -14,12 +15,13 @@
  * console.log(data); // { status: "ok", timestamp: "2023-10-05T12:34:56.789Z" }
  * ```
  */
-const fetchRender = async (path: string) => {
-  const response = await fetch(`${process.env.RENDER_URL}${path}`);
-  if (!response.ok) {
-    throw new Error(`Failed to fetch from Render: ${response.statusText}`);
-  }
-  return response.json();
+const fetchRender = async (path: string, options?: RequestInit) => {
+	console.log("RENDER_URL", process.env.RENDER_URL);
+	const response = await fetch(`${baseUrl}${path}`, options);
+	if (!response.ok) {
+		throw new Error(`Failed to fetch from Render: ${response.statusText}`);
+	}
+	return response.json();
 };
 
 export default fetchRender;
