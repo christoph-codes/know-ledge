@@ -5,10 +5,10 @@
 	"main": "index.ts",
 	"type": "module",
 	"scripts": {
-		"build": "npm run build:shared && tsc",
-		"build:shared": "test -d ../shared && cd ../shared && npm install && npm run build || echo 'Shared types not found, skipping'",
+		"build": "tsc",
+		"build:shared": "cd ../shared && npm install && npm run build",
+		"preinstall": "npm run build:shared",
 		"start": "tsc && node ./bin/index.js",
-		"preinstall": "if [ -d ../shared ]; then cd ../shared && npm install && npm run build; fi",
 		"dev": "nodemon --exec tsx ./index.ts",
 		"test": "test"
 	},
@@ -17,7 +17,7 @@
 	"dependencies": {
 		"@fastify/cors": "^11.2.0",
 		"@fastify/postgres": "^6.0.2",
-		"@know-ledge/shared": "*",
+		"@know-ledge/shared": "file:../shared",
 		"@supabase/supabase-js": "^2.89.0",
 		"dotenv": "^17.2.3",
 		"fastify": "^5.6.2",
