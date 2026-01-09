@@ -8,7 +8,7 @@ export const createResource = async (req: Resource) => {
 };
 
 export const loadResources = async (): Promise<Resource[]> => {
-  const sample: Resource[] = [
+  return [
     {
       title: "Intro to TypeScript",
       description: "A concise guide to TypeScript basics.",
@@ -38,7 +38,6 @@ export const loadResources = async (): Promise<Resource[]> => {
       resourceType: "Learning Resource",
     },
   ];
-  return sample;
 };
 
 export const filterResources = async (
@@ -46,12 +45,6 @@ export const filterResources = async (
   selectedResourceTypes: string[],
 ): Promise<Resource[]> => {
   const resources = await loadResources();
-
-  console.log(
-    "selectedTags ==> ",
-    selectedTags.map((tag) => tag.toLowerCase()),
-  );
-  console.log("selectedResourceTypes ==> ", selectedResourceTypes);
 
   let filtered: Resource[] = resources;
   if (selectedTags.length > 0) {
@@ -62,16 +55,12 @@ export const filterResources = async (
           .includes(tag.toLowerCase());
       }),
     );
-
-    // console.log("test-filtered", x);
   }
   if (selectedResourceTypes.length > 0) {
     filtered = filtered.filter((resource) =>
       selectedResourceTypes.includes(resource.resourceType),
     );
   }
-  // const filtered
 
-  console.log("filtered", filtered.length);
   return filtered;
 };
