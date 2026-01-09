@@ -1,29 +1,37 @@
 "use client";
-import { Resource } from "@/features/resources/domain/models";
+import { Resource } from "@know-ledge/shared";
 import { Badge } from "@/shared/ui/badge";
 import { CircleUser, ExternalLink, Newspaper } from "lucide-react";
 
 export const ResourceList = ({ resources }: { resources: Resource[] }) => {
+  const mappedResources = resources.map((r) => ({
+    ...r,
+    article_url:
+      r.article_url && r.article_url.trim().length > 0
+        ? r.article_url
+        : undefined,
+  }));
+
   return (
     <>
       <div className={"grid grid-cols-2 gap-4"}>
-        {resources.map((resource) => (
+        {mappedResources.map((resource) => (
           <div
             key={resource.title}
             className={"flex flex-col rounded-2xl border p-2.5 pt-4"}
           >
             <Badge variant="outline">
               <Newspaper />
-              {resource.resourceType}
+              {resource.type}
             </Badge>
             <p className={"text-md pt-3.5 font-semibold"}>{resource.title}</p>
             <p className={"pt-1 text-sm"}>{resource.description}</p>
 
             <div className={"flex flex-row gap-1 pt-3.5"}>
-              <ExternalLink size={20} href={resource.url} />
+              <ExternalLink size={20} href={resource.article_url} />
               <a
                 className={"font-semibold underline"}
-                href={resource.url}
+                href={resource.article_url}
                 target={"_blank"}
               >
                 View Article
@@ -31,7 +39,7 @@ export const ResourceList = ({ resources }: { resources: Resource[] }) => {
             </div>
 
             <div className={"flex flex-row gap-1 pt-10"}>
-              {resource.tags.map((tag) => (
+              {resource.tags?.map((tag) => (
                 <Badge variant="outline" key={tag}>
                   {tag}
                 </Badge>

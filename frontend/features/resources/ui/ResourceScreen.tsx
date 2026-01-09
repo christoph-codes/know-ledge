@@ -1,6 +1,6 @@
 "use client";
 import { Search } from "@/features/resources/ui/Search";
-import { Resource } from "@/features/resources/domain/models";
+import { Resource } from "@Know-ledge/shared";
 import { ResourceList } from "@/features/resources/ui/ResourceList";
 import { getResourceTypes, getTags } from "@/features/resources/data/queries";
 import { ResourceFilters } from "@/features/resources/ui/ResourceFilters";
