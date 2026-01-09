@@ -5,7 +5,6 @@
 	"scripts": {
 		"dev": "next dev",
 		"dev:webpack": "next dev --webpack",
-		"prepare": "tsc",
 		"build": "next build",
 		"build:with-shared": "cd .. && npm run build:shared && cd frontend && npm run build",
 		"build:webpack": "next build --webpack",
