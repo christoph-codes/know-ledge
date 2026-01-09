@@ -7,7 +7,7 @@
 	"scripts": {
 		"build": "tsc",
 		"build:with-shared": "cd .. && npm run build:shared && cd backend && npm run build",
-		"start": "node ./bin/index.js",
+		"start": "tsc && node ./bin/index.js",
 		"dev": "nodemon --exec tsx ./index.ts",
 		"test": "test"
 	},
