@@ -18,6 +18,7 @@ fastify.register(cors, {
 		process.env.LOCAL_ORIGIN,
 		process.env.RENDER_URL,
 		process.env.PROD_ORIGIN,
+		process.env.RENDER_ORIGIN,
 	].filter((origin): origin is string => typeof origin === "string"),
 	credentials: true,
 });
