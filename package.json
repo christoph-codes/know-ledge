@@ -1,5 +1,19 @@
 {
 	"name": "know-ledge",
 	"version": "1.0.0",
-	"private": true
+	"private": true,
+	"workspaces": [
+		"shared",
+		"frontend",
+		"backend"
+	],
+	"scripts": {
+		"build:shared": "npm run build --workspace=shared",
+		"dev:frontend": "npm run dev --workspace=frontend",
+		"build:frontend": "npm run build --workspace=frontend",
+		"dev:backend": "npm run dev --workspace=backend",
+		"build:backend": "npm run build --workspace=backend",
+		"start:backend": "npm run start --workspace=backend",
+		"install:all": "npm install"
+	}
 }

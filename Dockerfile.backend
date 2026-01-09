@@ -1,0 +1,25 @@
+# Use Node.js 18 official image
+FROM node:18-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files from root (for workspaces)
+COPY package*.json ./
+COPY shared/ ./shared/
+COPY backend/ ./backend/
+
+# Install dependencies
+RUN npm install
+
+# Build shared package
+RUN npm run build:shared
+
+# Build backend
+RUN cd backend && npm run build
+
+# Expose port
+EXPOSE 10000
+
+# Start the backend service
+CMD ["npm", "run", "start:backend"]

@@ -16,12 +16,20 @@ const baseUrl = process.env.NEXT_PUBLIC_RENDER_URL || "";
  * ```
  */
 const fetchRender = async (path: string, options?: RequestInit) => {
-	console.log("RENDER_URL", process.env.RENDER_URL);
 	const response = await fetch(`${baseUrl}${path}`, options);
 	if (!response.ok) {
 		throw new Error(`Failed to fetch from Render: ${response.statusText}`);
 	}
-	return response.json();
+
+	// Check if the response is JSON before parsing
+	const contentType = response.headers.get("content-type");
+	if (contentType?.includes("application/json")) {
+		return response.json();
+	} else {
+		// Handle plain text responses
+		const text = await response.text();
+		return { message: text };
+	}
 };
 
 export default fetchRender;

@@ -12,3 +12,25 @@ export interface HealthCheckResponse {
 	timestamp: string;
 	message?: string;
 }
+
+export const RESOURCE_TYPES = {
+	ARTICLE: "article",
+	CODE_SNIPPET: "code_snippet",
+	LEARNING: "learning",
+	COURSE: "course",
+	PODCAST: "podcast",
+};
+
+export type ResourceType = (typeof RESOURCE_TYPES)[keyof typeof RESOURCE_TYPES];
+
+export interface Resource {
+	id?: string; // unique identifier
+	type: ResourceType;
+	title: string;
+	description?: string;
+	tags?: string[];
+	article_url?: string;
+	snippet?: string;
+	language?: string;
+	created_at?: string;
+}

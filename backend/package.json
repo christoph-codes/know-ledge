@@ -6,9 +6,8 @@
 	"type": "module",
 	"scripts": {
 		"build": "tsc",
-		"build:shared": "cd ../shared && npm install && npm run build",
-		"preinstall": "npm run build:shared",
-		"start": "tsc && node ./bin/index.js",
+		"build:with-shared": "cd .. && npm run build:shared && cd backend && npm run build",
+		"start": "node ./bin/index.js",
 		"dev": "nodemon --exec tsx ./index.ts",
 		"test": "test"
 	},
@@ -17,7 +16,7 @@
 	"dependencies": {
 		"@fastify/cors": "^11.2.0",
 		"@fastify/postgres": "^6.0.2",
-		"@know-ledge/shared": "file:../shared",
+		"@know-ledge/shared": "*",
 		"@supabase/supabase-js": "^2.89.0",
 		"dotenv": "^17.2.3",
 		"fastify": "^5.6.2",

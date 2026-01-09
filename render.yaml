@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: know-ledge-backend
+    runtime: node
+    region: oregon
+    plan: starter
+    buildCommand: cd .. && npm install && npm run build:shared && cd backend && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/healthcheck
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000

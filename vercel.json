@@ -1,0 +1,13 @@
+{
+	"buildCommand": "npm run build:shared && npm run build --workspace=frontend",
+	"outputDirectory": "frontend/.next",
+	"installCommand": "npm install",
+	"ignoreCommand": "git diff --quiet HEAD^ HEAD ./frontend/",
+	"framework": "nextjs",
+	"rewrites": [
+		{
+			"source": "/api/(.*)",
+			"destination": "https://your-backend-url.render.com/api/$1"
+		}
+	]
+}
