@@ -1,6 +1,6 @@
 import { Resource, RESOURCE_TYPES } from "@know-ledge/shared";
 import { FastifyInstance, FastifyRequest } from "fastify";
-import { supabase } from "../config/supabase";
+import { supabase } from "../config/supabase.js";
 
 export default async function resourcesRoutes(fastify: FastifyInstance) {
 	fastify.get("/resources", async (request, reply) => {
