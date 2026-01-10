@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { HeaderNav } from "@/shared/ui/HeaderNav";
+// import { HeaderNav } from "@/shared/ui/HeaderNav";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,9 +28,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <HeaderNav />
-
-        <div className={"gap-2.5 px-14"}>{children}</div>
+        <div>{children}</div>
       </body>
     </html>
   );
