@@ -5,6 +5,9 @@ export const getResourceTypes = (): string[] => {
 export const getTags = (): string[] => {
   return [
     "C#",
+    "Patterns",
+    "Guide",
+    "React",
     "NextJS",
     "JavaScript",
     "TypeScript",
@@ -18,7 +21,6 @@ export const getTags = (): string[] => {
     "Kotlin",
     "HTML",
     "CSS",
-    "React",
     "Vue",
     "Angular",
     "Node.js",
