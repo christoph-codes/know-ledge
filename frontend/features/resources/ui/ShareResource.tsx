@@ -21,7 +21,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/shared/ui/sheet";
-import { Resource, RESOURCE_TYPES } from "@know-ledge/shared";
+import { Resource, RESOURCE_TYPES, Tag } from "@know-ledge/shared";
 import { TagInputAutocomplete } from "@/features/resources/ui/TagInputAutocomplete";
 import { useState } from "react";
 import { CodeSnippetInput } from "@/features/resources/ui/CodeSnippetInput";
@@ -33,7 +33,7 @@ export const ShareResource = () => {
   const [selectedLanguage, setSelectedLanguage] =
     useState<string>("typescript");
   const [resourceType, setResourceType] = useState<string>(
-    RESOURCE_TYPES.ARTICLE,
+    RESOURCE_TYPES.ARTICLE
   );
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
@@ -73,7 +73,7 @@ export const ShareResource = () => {
       const resource: Resource = {
         title: title,
         description: description,
-        tags: selectedTags,
+        tags: selectedTags.map((tagName) => ({ name: tagName }) as Tag),
         type: resourceType,
         article_url: url,
         snippet: codeSnippet,
