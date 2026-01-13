@@ -1,7 +1,17 @@
 "use server";
 
-import { Resource } from "@know-ledge/shared";
+import { Resource, ResultType } from "@know-ledge/shared";
 import fetchRender from "@/shared/lib/fetchRender";
+
+export const deleteResource = async (id: string): Promise<ResultType<void>> => {
+  console.log("deleting resource with id:", id);
+
+  return { ok: true };
+  // const result = await fetchRender(`/resources/${id}`, {
+  //   method: "DELETE",
+  // });
+  // return { result };
+};
 
 export const createResource = async (req: Resource) => {
   console.log(req);
@@ -19,11 +29,25 @@ export const createResource = async (req: Resource) => {
 
 export const loadResources = async (): Promise<Resource[]> => {
   const results = (await fetchRender("/resources")) as Resource[];
+  const userId = 1; // Replace with actual user ID logic if needed
 
-  return results.map((result) => ({
+  //console.log("Results =>", results);
+
+  const checkedResults = results.map((result) => ({
     ...result,
-    tags: JSON.parse(result.tags as unknown as string),
+    canEdit: userId === result.user_id,
+    tags: ["Typescript", "React"], // Replace with actual tags parsing logic if needed
   }));
+
+  console.log(checkedResults);
+  return checkedResults;
+
+  // return results;
+
+  // return results.map((result) => ({
+  //   ...result,
+  //   tags: JSON.parse(result.tags as unknown as string),
+  // }));
 
   // return [
   //   {

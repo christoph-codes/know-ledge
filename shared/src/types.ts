@@ -33,4 +33,11 @@ export interface Resource {
 	snippet?: string;
 	language?: string;
 	created_at?: string;
+	canEdit?: boolean;
+	user_id?: number;
 }
+
+export type ResultType<T> = {
+  ok: true;
+  data?: T;
+} |{ ok: false; error: string };

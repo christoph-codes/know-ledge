@@ -27,17 +27,34 @@ import { useState } from "react";
 import { CodeSnippetInput } from "@/features/resources/ui/CodeSnippetInput";
 import { createResource } from "@/features/resources/server/resource.action";
 
-export const ShareResource = () => {
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [codeSnippet, setCodeSnippet] = useState<string>("");
-  const [selectedLanguage, setSelectedLanguage] =
-    useState<string>("typescript");
-  const [resourceType, setResourceType] = useState<string>(
-    RESOURCE_TYPES.ARTICLE,
+export type ShareResourceProps = {
+  resourceItem?: Resource;
+  triggerElement: React.ReactNode;
+  isEditMode?: boolean;
+};
+
+export const ShareResource = ({
+  resourceItem,
+  triggerElement,
+  isEditMode,
+}: ShareResourceProps) => {
+  const [selectedTags, setSelectedTags] = useState<string[]>(
+    resourceItem?.tags ?? [],
   );
-  const [title, setTitle] = useState<string>("");
-  const [description, setDescription] = useState<string>("");
-  const [url, setUrl] = useState<string>("");
+  const [codeSnippet, setCodeSnippet] = useState<string>(
+    resourceItem?.snippet ?? "",
+  );
+  const [selectedLanguage, setSelectedLanguage] = useState<string>(
+    resourceItem?.language ?? "typescript",
+  );
+  const [resourceType, setResourceType] = useState<string>(
+    resourceItem?.type ?? RESOURCE_TYPES.ARTICLE,
+  );
+  const [title, setTitle] = useState<string>(resourceItem?.title ?? "");
+  const [description, setDescription] = useState<string>(
+    resourceItem?.description ?? "",
+  );
+  const [url, setUrl] = useState<string>(resourceItem?.article_url ?? "");
   const [errors, setErrors] = useState<string[]>([]);
 
   const isCodeSnippet = resourceType === RESOURCE_TYPES.CODE_SNIPPET;
@@ -52,6 +69,8 @@ export const ShareResource = () => {
     "API",
     "Database",
   ];
+
+  console.log("is edit mode ==>", isEditMode);
 
   const saveResource = async () => {
     setErrors([]);
@@ -92,6 +111,9 @@ export const ShareResource = () => {
   };
 
   const clearForm = () => {
+
+    if(isEditMode) return;
+
     setTitle("");
     setDescription("");
     setSelectedTags([]);
@@ -104,7 +126,8 @@ export const ShareResource = () => {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button className={"w-44 px-4 py-2"}>Share Resource</Button>
+        {/*<Button className={"w-44 px-4 py-2"}>Share Resource</Button>*/}
+        {triggerElement}
       </SheetTrigger>
       <SheetContent
         side={"right"}
