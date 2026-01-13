@@ -17,24 +17,30 @@ export const getResources = async ({
   const hasTypes = Array.isArray(resourceTypes) && resourceTypes.length > 0;
   let query = supabase.from("resources").select(
     `
-		*,
-		resource_tags${hasTags ? "!inner" : ""} (
-			tag_id,
-			tags!inner (
-				id,
-				name
-			)
+    *,
+    match_tags:resource_tags${hasTags ? "!inner" : ""} (
+      tags!inner (
+        name
+      )
     ),
-			user:users (
-					id,
-					name,
-					email
-				)
-		`
+    resource_tags (
+      tag_id,
+      tags (
+        id,
+        name
+      )
+    ),
+    user:users (
+      id,
+      name,
+      email
+    )
+  `
   );
   if (hasTags) {
     // will only return resources that have ALL specified tags
-    query = query.in("resource_tags.tags.name", tags);
+    // query = query.in("resource_tags.tags.name", tags);
+    query = query.in("match_tags.tags.name", tags);
   }
   if (searchTerm) {
     query = query.ilike("title", `%${searchTerm}%`);

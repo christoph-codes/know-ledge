@@ -4,6 +4,7 @@ import { Badge } from "@/shared/ui/badge";
 import { CircleUser, ExternalLink, Newspaper } from "lucide-react";
 
 export const ResourceList = ({ resources }: { resources: Resource[] }) => {
+  console.log("resources", resources);
   const mappedResources = resources.map((r) => ({
     ...r,
     article_url:
