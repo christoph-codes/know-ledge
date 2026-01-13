@@ -1,12 +1,13 @@
 import { Badge } from "@/shared/ui/badge";
+import { Tag } from "@know-ledge/shared";
 import { useState } from "react";
 
 export type ResourceFiltersProps = {
   resourceTypes: string[];
-  tags: string[];
+  tags: Tag[];
   onFiltersChange?: (filters: {
     selectedResourceTypes: string[];
-    selectedTags: string[];
+    selectedTags: Tag[];
   }) => void;
 };
 
@@ -16,9 +17,9 @@ export const ResourceFilters = ({
   onFiltersChange,
 }: ResourceFiltersProps) => {
   const [selectedResourceTypes, setSelectedResourceTypes] = useState<string[]>(
-    [],
+    []
   );
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
 
   const handleResourceTypeChange = (resourceType: string) => {
     const newSelectedTypes = selectedResourceTypes.includes(resourceType)
@@ -32,7 +33,7 @@ export const ResourceFilters = ({
     });
   };
 
-  const handleTagClick = (tag: string) => {
+  const handleTagClick = (tag: Tag) => {
     const newSelectedTags = selectedTags.includes(tag)
       ? selectedTags.filter((t) => t !== tag)
       : [...selectedTags, tag];
@@ -66,14 +67,14 @@ export const ResourceFilters = ({
         <p className={"mt-3.5"}>Tags</p>
         {tags.map((t) => (
           <Badge
-            key={t}
+            key={t.id}
             variant={selectedTags.includes(t) ? "default" : "outline"}
             className={
               "m-1 cursor-pointer transition-colors hover:bg-gray-100 hover:text-gray-800"
             }
             onClick={() => handleTagClick(t)}
           >
-            {t}
+            {t.name}
           </Badge>
         ))}
       </div>

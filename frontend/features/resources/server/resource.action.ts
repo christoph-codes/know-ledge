@@ -1,10 +1,9 @@
 "use server";
 
-import { Resource } from "@know-ledge/shared";
+import { Resource, Tag } from "@know-ledge/shared";
 import fetchRender from "@/shared/lib/fetchRender";
 
 export const createResource = async (req: Resource) => {
-  console.log(req);
   const result = await fetchRender("/resources", {
     method: "POST",
     headers: {
@@ -17,67 +16,43 @@ export const createResource = async (req: Resource) => {
   return { result };
 };
 
-export const loadResources = async (): Promise<Resource[]> => {
-  const results = (await fetchRender("/resources")) as Resource[];
+export const loadResources = async (
+  userId?: number,
+  tags?: string[],
+  searchTerm?: string,
+  types?: string[]
+): Promise<Resource[]> => {
+  const queryParams: Record<string, string> = {};
+  const hasTags = tags && tags.length > 0;
 
-  return results.map((result) => ({
-    ...result,
-    tags: JSON.parse(result.tags as unknown as string),
-  }));
+  if (userId) queryParams.userId = userId.toString();
+  if (hasTags) queryParams.tags = JSON.stringify(tags);
+  if (searchTerm) queryParams.searchTerm = searchTerm;
+  if (types && types.length > 0)
+    queryParams.resourceTypes = JSON.stringify(types);
 
-  // return [
-  //   {
-  //     title: "Intro to TypeScript",
-  //     description: "A concise guide to TypeScript basics.",
-  //     url: "https://www.typescriptlang.org/",
-  //     tags: ["typescript", "guide"],
-  //     resourceType: "Article",
-  //   },
-  //   {
-  //     title: "React Patterns",
-  //     description: "Collection of React design patterns.",
-  //     url: "https://reactpatterns.com/",
-  //     tags: ["react", "patterns"],
-  //     resourceType: "Article",
-  //   },
-  //   {
-  //     title: "Design Patterns",
-  //     description: "Collection of React design patterns.",
-  //     url: "https://reactpatterns.com/",
-  //     tags: ["patterns"],
-  //     resourceType: "Article",
-  //   },
-  //   {
-  //     title: "Server Actions",
-  //     description: "Collection of React design patterns.",
-  //     url: "https://reactpatterns.com/",
-  //     tags: ["react", "patterns", "nextjs"],
-  //     resourceType: "Learning Resource",
-  //   },
-  // ];
+  // Convert the parameters object to a URL-encoded query string
+  const queryString = new URLSearchParams(queryParams).toString();
+  const resources = (await fetchRender(
+    `/resources?${queryString}`
+  )) as Resource[];
+
+  return resources;
 };
 
 export const filterResources = async (
-  selectedTags: string[],
-  selectedResourceTypes: string[],
+  userId?: number,
+  selectedResourceTypes?: string[],
+  selectedTags?: Tag[],
+  searchTerm?: string
 ): Promise<Resource[]> => {
-  const resources = await loadResources();
+  const flatTags = selectedTags?.map((tag) => tag.name) ?? [];
+  const resources = await loadResources(
+    userId,
+    flatTags,
+    searchTerm,
+    selectedResourceTypes
+  );
 
-  let filtered: Resource[] = resources;
-  if (selectedTags.length > 0) {
-    filtered = resources.filter((resource) =>
-      resource.tags?.some((tag) => {
-        return selectedTags
-          .map((st) => st.toLowerCase())
-          .includes(tag.toLowerCase());
-      }),
-    );
-  }
-  if (selectedResourceTypes.length > 0) {
-    filtered = filtered.filter((resource) =>
-      selectedResourceTypes.includes(resource.type),
-    );
-  }
-
-  return filtered;
+  return resources;
 };
