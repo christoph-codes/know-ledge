@@ -21,7 +21,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/shared/ui/sheet";
-import { Resource, RESOURCE_TYPES } from "@know-ledge/shared";
+import { Resource, RESOURCE_TYPES, Tag } from "@know-ledge/shared";
 import { TagInputAutocomplete } from "@/features/resources/ui/TagInputAutocomplete";
 import { useState } from "react";
 import { CodeSnippetInput } from "@/features/resources/ui/CodeSnippetInput";
@@ -33,7 +33,7 @@ export const ShareResource = () => {
   const [selectedLanguage, setSelectedLanguage] =
     useState<string>("typescript");
   const [resourceType, setResourceType] = useState<string>(
-    RESOURCE_TYPES.ARTICLE,
+    RESOURCE_TYPES.ARTICLE
   );
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
@@ -73,7 +73,7 @@ export const ShareResource = () => {
       const resource: Resource = {
         title: title,
         description: description,
-        tags: selectedTags,
+        tags: selectedTags.map((tagName) => ({ name: tagName }) as Tag),
         type: resourceType,
         article_url: url,
         snippet: codeSnippet,
@@ -124,9 +124,9 @@ export const ShareResource = () => {
                   className={"w-full"}
                   placeholder="Select Resource Type"
                 >
-                  {resourceType !== "--"
-                    ? resourceType
-                    : "Select Resource Type"}
+                  {resourceType === "--"
+                    ? "Select Resource Type"
+                    : resourceType}
                 </SelectValue>
               </SelectTrigger>
               <SelectContent className="mt-10">
@@ -141,8 +141,9 @@ export const ShareResource = () => {
             </Select>
 
             <div>
-              <label>Title</label>
+              <label htmlFor="title">Title</label>
               <Input
+                id="title"
                 placeholder="Enter a descriptive title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
@@ -150,8 +151,9 @@ export const ShareResource = () => {
             </div>
 
             <div>
-              <label>Description</label>
+              <label htmlFor="description">Description</label>
               <Textarea
+                id="description"
                 placeholder="Enter a detailed description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
@@ -178,8 +180,9 @@ export const ShareResource = () => {
 
             {!isCodeSnippet && (
               <div>
-                <label>Article URL</label>
+                <label htmlFor="url">Article URL</label>
                 <Input
+                  id="url"
                   placeholder="Enter a URL"
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
