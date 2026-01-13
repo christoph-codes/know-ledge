@@ -5,6 +5,7 @@ import healthCheckRoutes from "./routes/healthcheck.routes.js";
 import usersRoutes from "./routes/users.routes.js";
 import cors from "@fastify/cors";
 import resourcesRoutes from "./routes/resources.routes.js";
+import tagsRoutes from "./routes/tags.routes.js";
 
 const fastify = Fastify({
 	// logger: true,
@@ -25,6 +26,7 @@ fastify.register(cors, {
 fastify.register(healthCheckRoutes);
 fastify.register(usersRoutes);
 fastify.register(resourcesRoutes);
+fastify.register(tagsRoutes);
 
 // Run the server!
 fastify.listen({ host, port }, function (err, address) {

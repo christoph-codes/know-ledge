@@ -1,50 +1,11 @@
+import fetchRender from "@/shared/lib/fetchRender";
+import { RESOURCE_TYPES } from "@know-ledge/shared";
+
 export const getResourceTypes = (): string[] => {
-  return ["Article", "Code Snippet", "Learning Resource"];
+  return Object.values(RESOURCE_TYPES);
 };
 
-export const getTags = (): string[] => {
-  return [
-    "C#",
-    "Patterns",
-    "Guide",
-    "React",
-    "NextJS",
-    "JavaScript",
-    "TypeScript",
-    "Python",
-    "Java",
-    "Go",
-    "Rust",
-    "Ruby",
-    "PHP",
-    "Swift",
-    "Kotlin",
-    "HTML",
-    "CSS",
-    "Vue",
-    "Angular",
-    "Node.js",
-    "Django",
-    "Flask",
-    "Spring",
-    "Docker",
-    "Kubernetes",
-    "AWS",
-    "Azure",
-    "GCP",
-    "SQL",
-    "NoSQL",
-    "GraphQL",
-    "REST API",
-    "Open Source",
-    "Web Development",
-    "Data Science",
-    "Machine Learning",
-    "DevOps",
-    "Mobile Development",
-    "Game Development",
-    "UI/UX Design",
-    "Cloud Computing",
-    "Cybersecurity",
-  ];
+export const getTags = async () => {
+  const result = await fetchRender("/tags");
+  return result;
 };
