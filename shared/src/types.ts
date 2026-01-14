@@ -34,6 +34,7 @@ export interface Resource {
   language?: string;
   created_at?: string;
   user?: Omit<User, "created_at">;
+  canEdit?: boolean; // indicates if the current user can edit this resource
 }
 
 export interface Tag {

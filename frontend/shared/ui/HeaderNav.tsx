@@ -7,6 +7,7 @@ export const HeaderNav = () => (
   <div
     className={"mb-20 h-20 border-b border-b-gray-300 bg-white drop-shadow-md"}
   >
+
     <div className={"flex h-full flex-row items-center gap-2 pl-12"}>
       <CompanyLogo />
 
@@ -22,8 +23,6 @@ export const HeaderNav = () => (
           />
 
           <div className={"flex items-center justify-center gap-2"}>
-            {/*<CircleUser size={35} />*/}
-            {/*<p className={"text-xl"}>Mike</p>*/}
             <UserDropdown />
           </div>
         </div>
