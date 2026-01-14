@@ -2,11 +2,12 @@
 import { Search } from "@/features/resources/ui/Search";
 import { Resource, Tag } from "@know-ledge/shared";
 import { ResourceList } from "@/features/resources/ui/ResourceList";
-import { getResourceTypes, getTags } from "@/features/resources/data/queries";
+import { getResourceTypes, getTags } from "@/features/resources/queries";
 import { ResourceFilters } from "@/features/resources/ui/ResourceFilters";
-import { filterResources } from "@/features/resources/server/resource.action";
+import { filterResources } from "@/features/resources/resource.action";
 import { useState, useEffect } from "react";
 import { Button } from "@/shared/ui/button";
+import {Toaster} from "sonner";
 
 export type ResourceScreenProps = {
   resources: Resource[];
@@ -63,12 +64,15 @@ export default function ResourceScreen({
 
   return (
     <>
+      <Toaster position={'top-center'} />
       <div className="flex flex-col gap-2">
+
         <p className={"mb-2 text-2xl font-medium"}>Discover Resources</p>
         <p className={"pb-6 text-lg"}>
           {" "}
           Explore shared knowledge from our community
         </p>
+
       </div>
       <div className="mb-10">
         <Search term={searchTerm} onChange={setSearchTerm} />
