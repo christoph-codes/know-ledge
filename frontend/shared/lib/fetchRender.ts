@@ -17,19 +17,11 @@ const baseUrl = process.env.NEXT_PUBLIC_RENDER_URL || "";
  */
 const fetchRender = async (path: string, options?: RequestInit) => {
   const response = await fetch(`${baseUrl}${path}`, options);
-  if (!response.ok) {
-    console.error("FetchRender error:", response);
-    throw new Error(`Failed to fetch from Render: ${response.statusText}`);
-  }
 
   // Check if the response is JSON before parsing
   const contentType = response.headers.get("content-type");
   if (contentType?.includes("application/json")) {
     return response.json();
-  } else {
-    // Handle plain text responses
-    const text = await response.text();
-    return { message: text };
   }
 };
 
