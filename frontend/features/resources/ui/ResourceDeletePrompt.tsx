@@ -10,7 +10,7 @@ import {
     AlertDialogTrigger,
 } from "@/shared/ui/alert-dialog";
 import {Trash2} from "lucide-react";
-import {deleteResource} from "@/features/resources/server/resource.action";
+import {deleteResource} from "@/features/resources/resource.action";
 import {toast} from "sonner";
 
 export type ResourceDeletePromptProps = {

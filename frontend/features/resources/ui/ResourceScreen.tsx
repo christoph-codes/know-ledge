@@ -2,9 +2,9 @@
 import { Search } from "@/features/resources/ui/Search";
 import { Resource, Tag } from "@know-ledge/shared";
 import { ResourceList } from "@/features/resources/ui/ResourceList";
-import { getResourceTypes, getTags } from "@/features/resources/data/queries";
+import { getResourceTypes, getTags } from "@/features/resources/queries";
 import { ResourceFilters } from "@/features/resources/ui/ResourceFilters";
-import { filterResources } from "@/features/resources/server/resource.action";
+import { filterResources } from "@/features/resources/resource.action";
 import { useState, useEffect } from "react";
 import { Button } from "@/shared/ui/button";
 import {Toaster} from "sonner";

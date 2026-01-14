@@ -3,7 +3,7 @@ import { CompanyLogo } from "@/shared/ui/CompanyLogo";
 import { Input } from "@/shared/ui/input";
 import { useState } from "react";
 import { Button } from "@/shared/ui/button";
-import { loginUser } from "@/features/auth/server/auth.actions";
+import { loginUser } from "@/features/auth/auth.actions";
 import { useRouter } from "next/dist/client/components/navigation";
 
 export default function LoginScreen() {

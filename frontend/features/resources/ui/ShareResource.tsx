@@ -25,7 +25,7 @@ import {Resource, RESOURCE_TYPES, Tag} from "@know-ledge/shared";
 import {TagInputAutocomplete} from "@/features/resources/ui/TagInputAutocomplete";
 import {useState} from "react";
 import {CodeSnippetInput} from "@/features/resources/ui/CodeSnippetInput";
-import {createResource, updateResource} from "@/features/resources/server/resource.action";
+import {createResource, updateResource} from "@/features/resources/resource.action";
 import {toast} from "sonner";
 
 export type ShareResourceProps = {

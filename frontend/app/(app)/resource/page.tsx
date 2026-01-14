@@ -1,5 +1,5 @@
 import ResourceScreen from "@/features/resources/ui/ResourceScreen";
-import { loadResources } from "@/features/resources/server/resource.action";
+import { loadResources } from "@/features/resources/resource.action";
 
 export default async function Page() {
   const data = await loadResources();
