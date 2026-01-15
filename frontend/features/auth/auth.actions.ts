@@ -25,14 +25,7 @@ export const userSignUp = async (name: string, email: string, pass: string): Pro
 
 export const loginUser = async (email: string, pass: string): Promise<ResultType<User>> => {
   console.log(email, pass);
-  // const cookieStore = await cookies();
-  // cookieStore.set('userId', sampleUser.id.toString()  , {
-  //   httpOnly: true,
-  //   secure: true, //process.env.NODE_ENV === 'production',
-  //   sameSite: 'lax',
-  //   path: '/',
-  //   maxAge: 60 * 60 * 24 * 7,
-  // })
+
   return {
     ok: true,
     data: sampleUser,
