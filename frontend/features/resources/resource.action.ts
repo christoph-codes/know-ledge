@@ -2,25 +2,36 @@
 
 import {Resource, Tag, ResultType} from "@know-ledge/shared";
 import fetchRender from "@/shared/lib/fetchRender";
+import {getCurrentUser} from "@/shared/server/auth";
 
 export const updateResource = async (id: number, req: Partial<Resource>): Promise<ResultType<void>> => {
     console.log("updating resource with id:", id, "and data:", req);
+    const result = await getCurrentUser();
+    if (result.ok && result.data) {
+        req.user = { id: result.data.id, email: result.data.email, name: result.data.name ?? ""  };
+    }
 
     return {ok: true};
+
 }
 
 export const deleteResource = async (id: number): Promise<ResultType<void>> => {
     console.log("deleting resource with id:", id);
-
+    const result = await getCurrentUser();
+    if (result.ok && result.data) {
+        console.log("deleting resource with id:", id)
+        console.log('with userId:', result.data.id);
+    }
     return {ok: true};
-    // const result = await fetchRender(`/resources/${id}`, {
-    //   method: "DELETE",
-    // });
-    // return { result };
+
 };
 
 export const createResource = async (req: Resource) => {
-    const result = await fetchRender("/resources", {
+    const result = await getCurrentUser();
+    if (result.ok && result.data) {
+        req.user = { id: result.data.id, email: result.data.email, name: result.data.name ?? ""  };
+    }
+    const resp = await fetchRender("/resources", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -29,7 +40,7 @@ export const createResource = async (req: Resource) => {
             resource: req,
         }),
     });
-    return {result};
+    return {resp};
 };
 
 export const loadResources = async (
@@ -53,7 +64,10 @@ export const loadResources = async (
         `/resources?${queryString}`
     )) as Resource[];
 
-    return resources.map(r => ({...r, canEdit: r.user?.id === 1}));
+    const result = await getCurrentUser();
+    const loggedInUserId = result.ok && result.data ? result.data.id : undefined;
+
+    return resources.map(r => ({...r, canEdit: r.user?.id === loggedInUserId}));
 };
 
 export const filterResources = async (
