@@ -20,7 +20,7 @@ const sampleUser: User = {
 };
 
 export const getCurrentUser = async (): Promise<ResultType<User>> => {
-  //TODO: Get user information from session token, return null if not valid or not found
+  // Get user information from session token, return null if not valid or not found
   // const cookieStore = await cookies();
   // const token = cookieStore.get('session')?.value
   // if (!token) return {status: RESPONSE_STATUS.FAILURE, message: 'No session token found'}

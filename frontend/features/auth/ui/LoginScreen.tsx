@@ -31,13 +31,25 @@ export default function LoginScreen() {
           <p className={""}>Login</p>
 
           <div className={"flex flex-col"}>
-            <label className={"font-semibold text-sm"}>Email</label>
-            <Input type="text" onChange={(e) => setEmail(e.target.value)} />
+            <label htmlFor="email" className={"font-semibold text-sm"}>
+              Email
+            </label>
+            <Input
+              id="email"
+              type="text"
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </div>
 
           <div className={"flex flex-col"}>
-            <label className={"font-semibold text-sm"}>Password</label>
-            <Input type="text" onChange={(e) => setPassword(e.target.value)} />
+            <label htmlFor="password" className={"font-semibold text-sm"}>
+              Password
+            </label>
+            <Input
+              id="password"
+              type="password"
+              onChange={(e) => setPassword(e.target.value)}
+            />
           </div>
 
           <Button onClick={handleSubmit} className={"w-full mt-4"}>

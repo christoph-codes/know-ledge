@@ -43,7 +43,7 @@ export function TagInputAutocomplete({
   maxTags,
   allowDuplicates = false,
   allowCustom = true,
-}: TagInputAutocompleteProps) {
+}: Readonly<TagInputAutocompleteProps>) {
   const [open, setOpen] = React.useState(false);
   const [draft, setDraft] = React.useState("");
   const inputRef = React.useRef<HTMLInputElement | null>(null);
@@ -112,7 +112,7 @@ export function TagInputAutocomplete({
     }
 
     if (e.key === "Backspace" && !draft && value.length) {
-      removeTag(value[value.length - 1] ?? "");
+      removeTag(value.at(-1) ?? "");
       return;
     }
 
@@ -127,12 +127,16 @@ export function TagInputAutocomplete({
       <div className="flex items-stretch gap-2">
         <Popover open={open && filtered.length > 0} onOpenChange={setOpen}>
           <PopoverAnchor asChild>
-            <div
+            <button
+              type="button"
               className={cn(
                 "bg-background flex min-h-10 w-full flex-wrap items-center gap-2 rounded-md border px-3 py-2",
-                "focus-within:ring-ring focus-within:ring-2 focus-within:ring-offset-2",
+                "focus-within:ring-ring focus-within:ring-2 focus-within:ring-offset-2"
               )}
               onClick={() => inputRef.current?.focus()}
+              tabIndex={-1}
+              style={{ textAlign: "left" }}
+              aria-label="Tag input area"
             >
               {value.map((tag) => (
                 <Badge
@@ -163,9 +167,9 @@ export function TagInputAutocomplete({
                 onBlur={handleInputBlur}
                 onKeyDown={onInputKeyDown}
                 placeholder={value.length ? "" : placeholder}
-                className="h-6 w-[160px] border-0 p-0 shadow-none focus-visible:ring-0"
+                className="h-6 w-40 border-0 p-0 shadow-none focus-visible:ring-0"
               />
-            </div>
+            </button>
           </PopoverAnchor>
 
           <PopoverContent
