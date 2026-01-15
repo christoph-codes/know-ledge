@@ -1,6 +1,5 @@
-import { FastifyInstance, FastifyReply } from "fastify";
 import { supabase } from "../config/supabase.js";
-import { Resource } from "@know-ledge/shared";
+import { Resource, RESOURCE_TYPES } from "@know-ledge/shared";
 
 export type GetResourceParams = {
   userId?: string;
@@ -58,12 +57,31 @@ export const getResources = async ({
   return await query;
 };
 
-export const createTags = async (
-  fastify: FastifyInstance,
-  reply: FastifyReply,
-  tags: string[],
-  createdResource: Resource
-) => {
+export const createResource = async (newResource: Partial<Resource>) => {
+  if (!newResource.title || newResource.type === undefined) {
+    throw new Error("Missing required resource fields");
+  }
+
+  if (!Object.values(RESOURCE_TYPES).includes(newResource.type)) {
+    throw new Error("Invalid resource type");
+  }
+
+  // 1) Create the resource and return the inserted row (including id)
+  const { data: createdResources, error: createErr } = await supabase
+    .from("resources")
+    .insert([newResource])
+    .select("*"); // ensures we get the created row back
+
+  if (createErr || !createdResources?.[0]) {
+    throw new Error(createErr?.message ?? "Failed to create resource");
+  }
+
+  const createdResource = createdResources[0];
+
+  return createdResource as Resource;
+};
+
+export const createTags = async (createdResource: Resource, tags: string[]) => {
   // Normalize tags: trim, drop empties, de-dupe, keep consistent casing behavior
   const normalizedTags = Array.from(
     new Set(tags.map((t) => (t ?? "").trim()).filter(Boolean))
@@ -71,7 +89,7 @@ export const createTags = async (
 
   if (normalizedTags.length === 0) {
     // No tags provided: return the full resource
-    return reply.send({ ...createdResource });
+    return createdResource;
   }
 
   // 2) Fetch any tags that already exist
@@ -81,8 +99,8 @@ export const createTags = async (
     .in("name", normalizedTags);
 
   if (existingErr) {
-    fastify.log.error({ existingErr }, "Failed to check existing tags");
-    return reply.status(500).send({ error: "Failed to check tags" });
+    console.error({ existingErr }, "Failed to check existing tags");
+    throw new Error("Failed to check tags");
   }
 
   const existingByName = new Map((existingTags ?? []).map((t) => [t.name, t]));
@@ -93,16 +111,13 @@ export const createTags = async (
   );
 
   if (missingNames.length > 0) {
-    console.log("missingNames", missingNames);
     const { error: insertTagsErr } = await supabase
       .from("tags")
       .insert(missingNames.map((name) => ({ name })));
 
     if (insertTagsErr) {
-      fastify.log.error(insertTagsErr.message);
-      return reply.status(500).send({
-        error: insertTagsErr?.message ?? "Failed to create tags",
-      });
+      console.error({ insertTagsErr }, "Failed to create tags");
+      throw new Error(insertTagsErr?.message ?? "Failed to create tags");
     }
   }
 
@@ -112,30 +127,30 @@ export const createTags = async (
     .select("id,name")
     .in("name", normalizedTags);
 
-  console.log("allTags", allTags);
-
   if (allTagsErr || !allTags?.length) {
-    fastify.log.error({ allTagsErr }, "Failed to fetch tag ids");
-    return reply.status(500).send({ error: "Failed to fetch tags" });
+    if (allTagsErr || !allTags?.length) {
+      console.error({ allTagsErr }, "Failed to fetch tag ids");
+      throw new Error("Failed to fetch tags");
+    }
+
+    // 4) Insert join records into resource_tags
+    const joinRows = allTags.map((t) => ({
+      resource_id: createdResource.id,
+      tag_id: t.id,
+    }));
+    console.log("joinRows", joinRows);
+
+    const { error: joinErr } = await supabase
+      .from("resource_tags")
+      .insert(joinRows);
+
+    if (joinErr) {
+      console.error({ joinErr }, "Failed to attach tags to resource");
+      throw new Error("Failed to attach tags");
+    }
+
+    return { status: "success" };
   }
-
-  // 4) Insert join records into resource_tags
-  const joinRows = allTags.map((t) => ({
-    resource_id: createdResource.id,
-    tag_id: t.id,
-  }));
-  console.log("joinRows", joinRows);
-
-  const { error: joinErr } = await supabase
-    .from("resource_tags")
-    .insert(joinRows);
-
-  if (joinErr) {
-    fastify.log.error({ joinErr }, "Failed to attach tags to resource");
-    return reply.status(500).send({ error: "Failed to attach tags" });
-  }
-
-  return reply.send({ status: "successfully created tags" });
 };
 
 export const updateResource = async (

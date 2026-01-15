@@ -1,7 +1,10 @@
-import { Resource, RESOURCE_TYPES } from "@know-ledge/shared";
+import { Resource } from "@know-ledge/shared";
 import { FastifyInstance, FastifyRequest } from "fastify";
-import { supabase } from "../config/supabase.js";
-import { createTags, getResources } from "../services/resources.service.js";
+import {
+  createResource,
+  createTags,
+  getResources,
+} from "../services/resources.service.js";
 
 export default async function resourcesRoutes(fastify: FastifyInstance) {
   fastify.get("/resources", async (_request, reply) => {
@@ -63,44 +66,15 @@ export default async function resourcesRoutes(fastify: FastifyInstance) {
       reply
     ) => {
       try {
-        fastify.log.info("📝 creating resource");
         const { resource, tags = [] } = request.body.payload;
+        const createdResource = await createResource(resource);
 
-        if (!resource.title || resource.type === undefined) {
-          fastify.log.error(
-            "Resource title and type are required to create a resource"
-          );
-          return reply.status(400).send({
-            error: "Resource title and type are required to create a resource",
-          });
-        }
+        await createTags(createdResource, tags);
 
-        if (!Object.values(RESOURCE_TYPES).includes(resource.type)) {
-          fastify.log.error("Invalid resource type");
-          return reply.status(400).send({ error: "Invalid resource type" });
-        }
-
-        // 1) Create the resource and return the inserted row (including id)
-        const { data: createdResources, error: createErr } = await supabase
-          .from("resources")
-          .insert([resource])
-          .select("*"); // ensures we get the created row back
-
-        if (createErr || !createdResources?.[0]) {
-          fastify.log.error({ createErr }, "Failed to create resource");
-          return reply.status(400).send({
-            error: createErr?.message ?? "Failed to create resource",
-          });
-        }
-
-        // RESOURCE CREATED SUCCESSFULLY AND NOW MOVING TO TAGS vvvvvv
-
-        const createdResource = createdResources[0];
-
-        await createTags(fastify, reply, tags, createdResource);
+        return reply.status(201).send({ status: "success" });
       } catch (err: any) {
-        fastify.log.error({ err }, "Unhandled /resources POST error");
-        return reply.status(500).send({ error: "Server error" });
+        fastify.log.error({ err });
+        return reply.status(500).send({ error: "Failed to create resource" });
       }
     }
   );
