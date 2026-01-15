@@ -1,9 +1,9 @@
 // Shared types for frontend and backend
 
 export interface User {
-  id: number;
+  id?: number;
   email: string;
-  created_at: string;
+  created_at?: string;
   name?: string;
 }
 
@@ -28,12 +28,13 @@ export interface Resource {
   type: ResourceType;
   title: string;
   description?: string;
-  tags?: Tag[];
+  tags?: Tag[]; // will only apply when fetching resources with their tags
   article_url?: string;
   snippet?: string;
   language?: string;
   created_at?: string;
-  user?: Omit<User, "created_at">;
+  user_id?: number;
+  user?: Omit<User, "created_at">; // will only apply when fetching resources with their user info
   canEdit?: boolean; // indicates if the current user can edit this resource
 }
 
@@ -43,10 +44,21 @@ export interface Tag {
   created_at?: string;
 }
 
+export interface ResourcePayload {
+  resource: Partial<Resource>;
+  tags?: string[];
+  user?: User;
+}
 
+export const RESPONSE_STATUS = {
+  SUCCESS: "success",
+  ERROR: "error",
+};
 
+export type ResponseStatus = keyof typeof RESPONSE_STATUS;
 
-export type ResultType<T = void> = T extends void
-    ? { ok: true } | { ok: false; error: string }
-    : { ok: true; data: T } | { ok: false; error: string };
-
+export type ResultType<T> = {
+  status: ResponseStatus;
+  message: string;
+  data?: T;
+};
