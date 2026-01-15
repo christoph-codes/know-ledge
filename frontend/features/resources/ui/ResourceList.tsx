@@ -87,7 +87,7 @@ export const ResourceList = ({ resources }: ResourceListProps) => {
               )}
             </div>
 
-            <div className={"flex flex-row gap-1 pt-10"}>
+            <div className={"flex flex-row gap-1 pt-10 mb-3"}>
               {resource.tags?.map((tag) => (
                 <Badge variant="outline" key={tag.id}>
                   {tag.name}
@@ -95,8 +95,8 @@ export const ResourceList = ({ resources }: ResourceListProps) => {
               ))}
             </div>
 
-            <div className={"border-t-red-500x mt-3.5 border-t"}>
-              <div className={"justify-centerx flex items-center gap-2 pt-2"}>
+            <div className={"mt-auto border-t"}>
+              <div className={"flex items-center gap-2 pt-2"}>
                 <CircleUser size={20} />
                 <p className={"text-md"}>{resource.user?.name}</p>
               </div>
