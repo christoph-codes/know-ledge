@@ -123,6 +123,13 @@ export const deleteResource = async (id: number): Promise<ResultType<void>> => {
     console.log("with userId:", Number(result.data.id));
   }
 
+  await fetchRender(`/resources/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
   return {
     status: RESPONSE_STATUS.SUCCESS as ResponseStatus,
     message: "Resource deleted successfully",

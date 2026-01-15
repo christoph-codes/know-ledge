@@ -1,5 +1,12 @@
 import { supabase } from "../config/supabase.js";
-import { Resource, RESOURCE_TYPES, ResourcePayload } from "@know-ledge/shared";
+import {
+  Resource,
+  RESOURCE_TYPES,
+  ResourcePayload,
+  RESPONSE_STATUS,
+  ResponseStatus,
+  ResultType,
+} from "@know-ledge/shared";
 
 export type GetResourceParams = {
   userId?: string;
@@ -83,7 +90,11 @@ export const createResource = async (
 
   await saveTags(createdResource, tags ?? []);
 
-  return { status: "success", data: createdResource };
+  return {
+    status: RESPONSE_STATUS.SUCCESS as ResponseStatus,
+    message: "Resource created successfully",
+    data: createdResource,
+  };
 };
 
 export const saveTags = async (createdResource: Resource, tags: string[]) => {
@@ -94,7 +105,11 @@ export const saveTags = async (createdResource: Resource, tags: string[]) => {
 
   if (normalizedTags.length === 0) {
     // No tags provided: return the full resource
-    return { status: "No tags provided", data: createdResource };
+    return {
+      status: RESPONSE_STATUS.SUCCESS as ResponseStatus,
+      message: "No tags provided",
+      data: createdResource,
+    };
   }
 
   // 2) Fetch any tags that already exist
@@ -153,13 +168,16 @@ export const saveTags = async (createdResource: Resource, tags: string[]) => {
     throw new Error("Failed to attach tags");
   }
 
-  return { status: "success" };
+  return {
+    status: RESPONSE_STATUS.SUCCESS as ResponseStatus,
+    message: "Tags attached successfully",
+  };
 };
 
 export const updateResource = async (
   resourceId: number,
   payload: ResourcePayload
-) => {
+): Promise<ResultType<void>> => {
   console.log("payload", payload);
   try {
     if (!resourceId) {
@@ -203,28 +221,31 @@ export const updateResource = async (
     const updatedKeys = Object.keys(payload.resource);
 
     return {
-      status: "success",
+      status: RESPONSE_STATUS.SUCCESS as ResponseStatus,
       message: `Updated fields: ${updatedKeys.join(", ")}`,
     };
   } catch (err: any) {
     console.error("updateResource error:", err.message);
-    return {
-      status: "error",
-      message: err.message ?? "Unknown error during resource update",
-    };
+    throw err;
   }
 };
 
 // MIKE STAY HERE!
-export const deleteResource = async (resourceId: number) => {
+export const deleteResource = async (
+  resourceId: number
+): Promise<ResultType<void>> => {
   const { error } = await supabase
     .from("resources")
     .delete()
     .eq("id", resourceId);
 
   if (error) {
-    console.log("error", error);
+    console.error("deleteResource error:", error);
+    throw new Error(error.message);
   }
 
-  return error;
+  return {
+    status: RESPONSE_STATUS.SUCCESS as ResponseStatus,
+    message: "Resource deleted successfully",
+  };
 };

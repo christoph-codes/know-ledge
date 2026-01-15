@@ -2,6 +2,7 @@ import { ResourcePayload } from "@know-ledge/shared";
 import { FastifyInstance, FastifyRequest } from "fastify";
 import {
   createResource,
+  deleteResource,
   getResources,
   updateResource,
 } from "../services/resources.service.js";
@@ -93,10 +94,31 @@ export default async function resourcesRoutes(fastify: FastifyInstance) {
         const { message } = await updateResource(resourceId, payload);
         return reply.status(200).send({ status: "success", message });
       } catch (err: any) {
-        console.error({ err });
+        console.error({ err }, "Failed to update resource");
         return reply
           .status(500)
           .send({ error: err.message ?? "Failed to update resource" });
+      }
+    }
+  );
+
+  fastify.delete(
+    "/resources/:id",
+    async (
+      request: FastifyRequest<{
+        Params: { id: string };
+      }>,
+      reply
+    ) => {
+      try {
+        const resourceId = Number(request.params.id);
+        const { message } = await deleteResource(resourceId);
+        return reply.status(200).send({ status: "success", message });
+      } catch (err: any) {
+        console.error({ err }, "Failed to delete resource");
+        return reply
+          .status(500)
+          .send({ error: err.message ?? "Failed to delete resource" });
       }
     }
   );
