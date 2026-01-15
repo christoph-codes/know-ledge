@@ -46,7 +46,9 @@ export const CodeSnippetInput = ({
 }: CodeSnippetInputProps) => {
   return (
     <div className={`space-y-2 ${className}`}>
-      <label className="text-sm font-medium">Code Snippet</label>
+      <label htmlFor="code-snippet" className="text-sm font-medium">
+        Code Snippet
+      </label>
 
       <Select value={language} onValueChange={onLanguageChange}>
         <SelectTrigger className="w-full">
@@ -64,10 +66,11 @@ export const CodeSnippetInput = ({
       </Select>
 
       <Textarea
+        id="code-snippet"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="min-h-[200px] font-mono text-sm"
+        className="min-h-50 font-mono text-sm"
       />
 
       {value && (

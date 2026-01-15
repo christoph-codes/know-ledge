@@ -21,7 +21,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/shared/ui/sheet";
-import { Resource, RESOURCE_TYPES, Tag } from "@know-ledge/shared";
+import { Resource, RESOURCE_TYPES } from "@know-ledge/shared";
 import { TagInputAutocomplete } from "@/features/resources/ui/TagInputAutocomplete";
 import { useState } from "react";
 import { CodeSnippetInput } from "@/features/resources/ui/CodeSnippetInput";
@@ -42,6 +42,7 @@ export const ShareResource = ({
   triggerElement,
   isEditMode,
 }: ShareResourceProps) => {
+  const [isResourceModalOpen, setIsResourceModalOpen] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>(
     resourceItem?.tags?.map((t) => t.name) ?? []
   );
@@ -94,17 +95,19 @@ export const ShareResource = ({
       const resource: Resource = {
         title: title,
         description: description,
-        tags: selectedTags.map((tagName) => ({ name: tagName }) as Tag),
         type: resourceType,
         article_url: url,
         snippet: codeSnippet,
         language: selectedLanguage,
       };
+      const tags = selectedTags.map((tagName) => tagName);
+
+      const payload = { resource, tags };
 
       if (isEditMode && resourceItem?.id) {
-        await updateResource(resourceItem.id, resource);
+        await updateResource(resourceItem.id, payload);
       } else {
-        await createResource(resource);
+        await createResource(payload);
       }
       toast(
         isEditMode
@@ -122,6 +125,7 @@ export const ShareResource = ({
   };
 
   const clearForm = () => {
+    setIsResourceModalOpen(false);
     if (isEditMode) return;
 
     setTitle("");
@@ -134,8 +138,8 @@ export const ShareResource = ({
   };
 
   return (
-    <Sheet>
-      <SheetTrigger asChild>
+    <Sheet open={isResourceModalOpen} onOpenChange={setIsResourceModalOpen}>
+      <SheetTrigger onClick={() => setIsResourceModalOpen(true)} asChild>
         {/*<Button className={"w-44 px-4 py-2"}>Share Resource</Button>*/}
         {triggerElement}
       </SheetTrigger>
@@ -149,7 +153,7 @@ export const ShareResource = ({
             Contribute to the knowledge base by sharing valuable content
           </SheetDescription>
         </SheetHeader>
-        <div className={"mx-4"}>
+        <div className={"mx-4 overflow-y-auto"}>
           <div className="flex flex-col gap-4">
             <Select value={resourceType} onValueChange={setResourceType}>
               <SelectTrigger className="w-full">
@@ -245,7 +249,7 @@ export const ShareResource = ({
                 </Button>
               </SheetClose>
 
-              <Button type="submit" className={"w-44"} onClick={saveResource}>
+              <Button className={"w-44"} onClick={saveResource}>
                 {isEditMode ? "Save Changes" : "Share"}
               </Button>
             </div>
