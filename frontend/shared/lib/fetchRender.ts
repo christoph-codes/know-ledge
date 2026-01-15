@@ -9,11 +9,6 @@ const baseUrl = process.env.NEXT_PUBLIC_RENDER_URL || "";
  * @returns The `fetchRender` function is returning a Promise that resolves to the JSON data fetched
  * from the specified path using the `fetch` function. If the response is not successful (status code
  * other than 2xx), an error is thrown with a message indicating the failure to fetch from Render.
- * @example
- * ```ts
- * const data = await fetchRender("/healthcheck");
- * console.log(data); // { status: "ok", timestamp: "2023-10-05T12:34:56.789Z" }
- * ```
  */
 const fetchRender = async (path: string, options?: RequestInit) => {
   const response = await fetch(`${baseUrl}${path}`, options);

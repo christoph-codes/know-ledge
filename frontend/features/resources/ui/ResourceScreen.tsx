@@ -47,7 +47,6 @@ export default function ResourceScreen({
   // Trigger handleFiltersChange when searchTerm changes
   useEffect(() => {
     (async () => {
-      console.log("selectedTags", selectedTags);
       const filtered = await filterResources(
         userId,
         selectedResourceTypes,

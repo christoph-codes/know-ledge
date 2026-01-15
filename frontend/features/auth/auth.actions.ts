@@ -1,7 +1,6 @@
 "use server";
 
 import { RESPONSE_STATUS, ResultType, User } from "@know-ledge/shared";
-// import {cookies} from "next/headers";
 
 const sampleUser: User = {
   id: 1,

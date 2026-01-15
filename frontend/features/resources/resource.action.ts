@@ -84,7 +84,7 @@ export const updateResource = async (
   id: number,
   payload: ResourcePayload
 ): Promise<ResultType<Resource>> => {
-  console.log("updating resource with id:", id, "and data:", payload);
+  console.log("☕️ updating resource with id:", id);
 
   const result = await getCurrentUser();
   if (result.status === RESPONSE_STATUS.SUCCESS && result.data) {
@@ -115,12 +115,11 @@ export const updateResource = async (
 };
 
 export const deleteResource = async (id: number): Promise<ResultType<void>> => {
-  console.log("deleting resource with id:", id);
+  console.log("❌ deleting resource with id:", id);
 
   const result = await getCurrentUser();
-  if (result.status === RESPONSE_STATUS.SUCCESS && result.data) {
-    console.log("deleting resource with id:", id);
-    console.log("with userId:", Number(result.data.id));
+  if (result.status === RESPONSE_STATUS.ERROR) {
+    throw new Error("User must be logged in to delete a resource");
   }
 
   await fetchRender(`/resources/${id}`, {

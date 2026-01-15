@@ -157,7 +157,6 @@ export const saveTags = async (createdResource: Resource, tags: string[]) => {
     resource_id: createdResource.id,
     tag_id: t.id,
   }));
-  console.log("joinRows", joinRows);
 
   const { error: joinErr } = await supabase
     .from("resource_tags")
@@ -178,7 +177,6 @@ export const updateResource = async (
   resourceId: number,
   payload: ResourcePayload
 ): Promise<ResultType<void>> => {
-  console.log("payload", payload);
   try {
     if (!resourceId) {
       throw new Error("Resource ID is required for update");
@@ -205,7 +203,6 @@ export const updateResource = async (
       }
 
       currentResource = updatedResource[0] as Resource;
-      console.log("currentResource", currentResource);
     }
 
     try {
