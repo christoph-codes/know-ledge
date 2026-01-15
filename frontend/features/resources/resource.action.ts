@@ -10,15 +10,6 @@ export const updateResource = async (id: number, req: Partial<Resource>): Promis
     if (result.ok && result.data) {
         req.user = { id: result.data.id, email: result.data.email, name: result.data.name ?? ""  };
     }
-    await fetchRender("/resources", {
-        method: "PATCH",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            resource: req,
-        }),
-    });
 
     return {ok: true};
 
@@ -30,10 +21,6 @@ export const deleteResource = async (id: number): Promise<ResultType<void>> => {
     if (result.ok && result.data) {
         console.log("deleting resource with id:", id)
         console.log('with userId:', result.data.id);
-        // const result = await fetchRender(`/resources/${userId}/${id}`, {
-        //   method: "DELETE",
-        // });
-        // return { result };
     }
     return {ok: true};
 
