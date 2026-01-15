@@ -1,9 +1,9 @@
-import { Resource } from "@know-ledge/shared";
+import { ResourcePayload } from "@know-ledge/shared";
 import { FastifyInstance, FastifyRequest } from "fastify";
 import {
   createResource,
-  createTags,
   getResources,
+  updateResource,
 } from "../services/resources.service.js";
 
 export default async function resourcesRoutes(fastify: FastifyInstance) {
@@ -61,20 +61,42 @@ export default async function resourcesRoutes(fastify: FastifyInstance) {
     "/resources",
     async (
       request: FastifyRequest<{
-        Body: { payload: { resource: Partial<Resource>; tags?: string[] } };
+        Body: { payload: ResourcePayload };
       }>,
       reply
     ) => {
       try {
         const { resource, tags = [] } = request.body.payload;
-        const createdResource = await createResource(resource);
 
-        await createTags(createdResource, tags);
-
+        await createResource(resource, tags);
         return reply.status(201).send({ status: "success" });
       } catch (err: any) {
         fastify.log.error({ err });
         return reply.status(500).send({ error: "Failed to create resource" });
+      }
+    }
+  );
+
+  fastify.patch(
+    "/resources/:id",
+    async (
+      request: FastifyRequest<{
+        Params: { id: string };
+        Body: { payload: ResourcePayload };
+      }>,
+      reply
+    ) => {
+      try {
+        const resourceId = Number(request.params.id);
+        const { payload } = request.body;
+
+        const { message } = await updateResource(resourceId, payload);
+        return reply.status(200).send({ status: "success", message });
+      } catch (err: any) {
+        console.error({ err });
+        return reply
+          .status(500)
+          .send({ error: err.message ?? "Failed to update resource" });
       }
     }
   );

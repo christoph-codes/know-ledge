@@ -44,6 +44,21 @@ export interface Tag {
   created_at?: string;
 }
 
-export type ResultType<T = void> = T extends void
-  ? { ok: true } | { ok: false; error: string }
-  : { ok: true; data?: T } | { ok: false; error: string };
+export interface ResourcePayload {
+  resource: Partial<Resource>;
+  tags?: string[];
+  user?: User;
+}
+
+export const RESPONSE_STATUS = {
+  SUCCESS: "success",
+  ERROR: "error",
+};
+
+export type ResponseStatus = keyof typeof RESPONSE_STATUS;
+
+export type ResultType<T> = {
+  status: ResponseStatus;
+  message: string;
+  data?: T;
+};

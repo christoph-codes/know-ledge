@@ -1,33 +1,31 @@
 "use server";
 
-import { Resource, Tag, ResultType, User } from "@know-ledge/shared";
+import {
+  Resource,
+  Tag,
+  ResultType,
+  ResourcePayload,
+  ResponseStatus,
+  RESPONSE_STATUS,
+} from "@know-ledge/shared";
 import fetchRender from "@/shared/lib/fetchRender";
 import { getCurrentUser } from "@/shared/server/auth";
 
-export type CreateResourceRequest = {
-  resource: Resource;
-  tags: string[];
-  user?: User;
-};
-
-export const createResource = async (req: CreateResourceRequest) => {
+export const createResource = async (req: ResourcePayload) => {
   const userResult = await getCurrentUser();
-  if (userResult.ok && userResult.data) {
+  if (userResult.status === RESPONSE_STATUS.SUCCESS && userResult.data) {
     req.user = {
       id: Number(userResult.data.id),
       email: userResult.data.email,
       name: userResult.data.name ?? "",
     };
   }
-
   const result = await fetchRender("/resources", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({
-      resource: req,
-    }),
+    body: JSON.stringify(req),
   });
   return { result };
 };
@@ -54,7 +52,10 @@ export const loadResources = async (
   )) as Resource[];
 
   const result = await getCurrentUser();
-  const loggedInUserId = result.ok && result.data ? result.data.id : undefined;
+  const loggedInUserId =
+    result.status === RESPONSE_STATUS.SUCCESS && result.data
+      ? result.data.id
+      : undefined;
 
   return resources.map((r) => ({
     ...r,
@@ -81,29 +82,49 @@ export const filterResources = async (
 
 export const updateResource = async (
   id: number,
-  req: Partial<Resource>
-): Promise<ResultType<void>> => {
-  console.log("updating resource with id:", id, "and data:", req);
+  payload: ResourcePayload
+): Promise<ResultType<Resource>> => {
+  console.log("updating resource with id:", id, "and data:", payload);
+
   const result = await getCurrentUser();
-  if (result.ok && result.data) {
-    req.user = {
+  if (result.status === RESPONSE_STATUS.SUCCESS && result.data) {
+    payload.user = {
       id: Number(result.data.id),
       email: result.data.email,
       name: result.data.name ?? "",
     };
   }
 
-  return { ok: true };
+  const response = await fetchRender(`/resources/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify({ payload }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (response.status !== RESPONSE_STATUS.SUCCESS) {
+    throw new Error(response?.message || "Failed to update resource");
+  }
+
+  return {
+    status: RESPONSE_STATUS.SUCCESS as ResponseStatus,
+    message: "Resource updated successfully",
+    data: response,
+  };
 };
 
 export const deleteResource = async (id: number): Promise<ResultType<void>> => {
   console.log("deleting resource with id:", id);
 
   const result = await getCurrentUser();
-  if (result.ok && result.data) {
+  if (result.status === RESPONSE_STATUS.SUCCESS && result.data) {
     console.log("deleting resource with id:", id);
     console.log("with userId:", Number(result.data.id));
   }
 
-  return { ok: true };
+  return {
+    status: RESPONSE_STATUS.SUCCESS as ResponseStatus,
+    message: "Resource deleted successfully",
+  };
 };

@@ -1,5 +1,5 @@
 import { supabase } from "../config/supabase.js";
-import { Resource, RESOURCE_TYPES } from "@know-ledge/shared";
+import { Resource, RESOURCE_TYPES, ResourcePayload } from "@know-ledge/shared";
 
 export type GetResourceParams = {
   userId?: string;
@@ -57,7 +57,10 @@ export const getResources = async ({
   return await query;
 };
 
-export const createResource = async (newResource: Partial<Resource>) => {
+export const createResource = async (
+  newResource: Partial<Resource>,
+  tags?: string[]
+) => {
   if (!newResource.title || newResource.type === undefined) {
     throw new Error("Missing required resource fields");
   }
@@ -78,10 +81,12 @@ export const createResource = async (newResource: Partial<Resource>) => {
 
   const createdResource = createdResources[0];
 
-  return createdResource as Resource;
+  await saveTags(createdResource, tags ?? []);
+
+  return { status: "success", data: createdResource };
 };
 
-export const createTags = async (createdResource: Resource, tags: string[]) => {
+export const saveTags = async (createdResource: Resource, tags: string[]) => {
   // Normalize tags: trim, drop empties, de-dupe, keep consistent casing behavior
   const normalizedTags = Array.from(
     new Set(tags.map((t) => (t ?? "").trim()).filter(Boolean))
@@ -89,7 +94,7 @@ export const createTags = async (createdResource: Resource, tags: string[]) => {
 
   if (normalizedTags.length === 0) {
     // No tags provided: return the full resource
-    return createdResource;
+    return { status: "No tags provided", data: createdResource };
   }
 
   // 2) Fetch any tags that already exist
@@ -128,47 +133,86 @@ export const createTags = async (createdResource: Resource, tags: string[]) => {
     .in("name", normalizedTags);
 
   if (allTagsErr || !allTags?.length) {
-    if (allTagsErr || !allTags?.length) {
-      console.error({ allTagsErr }, "Failed to fetch tag ids");
-      throw new Error("Failed to fetch tags");
-    }
-
-    // 4) Insert join records into resource_tags
-    const joinRows = allTags.map((t) => ({
-      resource_id: createdResource.id,
-      tag_id: t.id,
-    }));
-    console.log("joinRows", joinRows);
-
-    const { error: joinErr } = await supabase
-      .from("resource_tags")
-      .insert(joinRows);
-
-    if (joinErr) {
-      console.error({ joinErr }, "Failed to attach tags to resource");
-      throw new Error("Failed to attach tags");
-    }
-
-    return { status: "success" };
+    console.error({ allTagsErr }, "Failed to fetch tag ids");
+    throw new Error("Failed to fetch tags");
   }
+
+  // 4) Insert join records into resource_tags
+  const joinRows = allTags.map((t) => ({
+    resource_id: createdResource.id,
+    tag_id: t.id,
+  }));
+  console.log("joinRows", joinRows);
+
+  const { error: joinErr } = await supabase
+    .from("resource_tags")
+    .insert(joinRows);
+
+  if (joinErr) {
+    console.error({ joinErr }, "Failed to attach tags to resource");
+    throw new Error("Failed to attach tags");
+  }
+
+  return { status: "success" };
 };
 
 export const updateResource = async (
   resourceId: number,
-  updates: Partial<Resource>
+  payload: ResourcePayload
 ) => {
-  const { data, error } = await supabase
-    .from("resources")
-    .update(updates)
-    .eq("id", resourceId)
-    .select("*");
+  console.log("payload", payload);
+  try {
+    if (!resourceId) {
+      throw new Error("Resource ID is required for update");
+    }
+    if (!payload) {
+      throw new Error("No update payload provided");
+    }
 
-  if (error) {
-    console.error("Failed to update resource", error);
-    return { error };
+    let currentResource: Resource | undefined = undefined;
+
+    if (payload.resource && Object.keys(payload.resource).length > 0) {
+      const { data: updatedResource, error } = await supabase
+        .from("resources")
+        .update(payload.resource)
+        .eq("id", resourceId)
+        .select("*");
+
+      if (error) {
+        console.error("Failed to update resource", error.message);
+        throw new Error(error.message ?? "Failed to update resource");
+      }
+      if (!updatedResource || updatedResource.length === 0) {
+        throw new Error("No resource was updated");
+      }
+
+      currentResource = updatedResource[0] as Resource;
+      console.log("currentResource", currentResource);
+    }
+
+    try {
+      if (currentResource) {
+        const result = await saveTags(currentResource, payload.tags ?? []);
+        console.log("Tags updated?????", result); // this is where im stopping
+      }
+    } catch (error: any) {
+      console.error("Failed to update tags", error.message);
+      throw new Error(error.message ?? "Failed to update tags");
+    }
+
+    const updatedKeys = Object.keys(payload.resource);
+
+    return {
+      status: "success",
+      message: `Updated fields: ${updatedKeys.join(", ")}`,
+    };
+  } catch (err: any) {
+    console.error("updateResource error:", err.message);
+    return {
+      status: "error",
+      message: err.message ?? "Unknown error during resource update",
+    };
   }
-
-  return { data };
 };
 
 // MIKE STAY HERE!
@@ -176,7 +220,7 @@ export const deleteResource = async (resourceId: number) => {
   const { error } = await supabase
     .from("resources")
     .delete()
-    .eq("resource_id", resourceId);
+    .eq("id", resourceId);
 
   if (error) {
     console.log("error", error);
