@@ -103,16 +103,17 @@ export default async function resourcesRoutes(fastify: FastifyInstance) {
   );
 
   fastify.delete(
-    "/resources/:id",
+    "/resources/:id/user/:userId",
     async (
       request: FastifyRequest<{
-        Params: { id: string };
+        Params: { id: string, userId: string };
       }>,
       reply
     ) => {
       try {
         const resourceId = Number(request.params.id);
-        const { message } = await deleteResource(resourceId);
+        const userId = Number(request.params.userId);
+        const { message } = await deleteResource(resourceId, userId);
         return reply.status(200).send({ status: "success", message });
       } catch (err: any) {
         console.error({ err }, "Failed to delete resource");

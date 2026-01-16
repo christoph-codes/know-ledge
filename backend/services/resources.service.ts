@@ -61,7 +61,9 @@ export const getResources = async ({
     query = query.eq("user_id", userId);
   }
 
-  return await query;
+  query.order('title', { ascending: true });
+
+  return  query;
 };
 
 export const createResource = async (
@@ -158,6 +160,16 @@ export const saveTags = async (createdResource: Resource, tags: string[]) => {
     tag_id: t.id,
   }));
 
+  const { error: errDelResourceTags } = await supabase
+      .from("resource_tags")
+      .delete()
+      .eq("resource_id", createdResource.id);
+
+  if (errDelResourceTags) {
+    console.error({ errDelResourceTags }, "Failed to delete resource tags");
+    throw new Error(errDelResourceTags?.message ?? "Failed to delete resource tags");
+  }
+
   const { error: joinErr } = await supabase
     .from("resource_tags")
     .insert(joinRows);
@@ -185,6 +197,10 @@ export const updateResource = async (
       throw new Error("No update payload provided");
     }
 
+    if(!payload.user?.id){
+      throw new Error("User ID is required for update");
+    }
+
     let currentResource: Resource | undefined = undefined;
 
     if (payload.resource && Object.keys(payload.resource).length > 0) {
@@ -192,6 +208,7 @@ export const updateResource = async (
         .from("resources")
         .update(payload.resource)
         .eq("id", resourceId)
+          .eq("user_id", payload.user?.id) // Ensure the user owns the resource
         .select("*");
 
       if (error) {
@@ -227,14 +244,38 @@ export const updateResource = async (
   }
 };
 
-// MIKE STAY HERE!
+
 export const deleteResource = async (
-  resourceId: number
+    resourceId: number,
+    userId: number
 ): Promise<ResultType<void>> => {
-  const { error } = await supabase
-    .from("resources")
-    .delete()
-    .eq("id", resourceId);
+
+
+  const {data: resource, error: fetchErr} = await supabase
+      .from("resources")
+      .select("*")
+      .eq("id", resourceId)
+      .eq("user_id", userId)
+      .single();
+
+  if (fetchErr) {
+    console.error("Failed to fetch resource for deletion", fetchErr.message);
+    throw new Error(fetchErr.message ?? "Failed to fetch resource");
+  }
+
+  if (!resource) {
+    throw new Error("Resource not found");
+  }
+  await supabase
+      .from("resource_tags")
+      .delete()
+      .eq("resource_id", resourceId);
+
+  const {error} = await supabase
+      .from("resources")
+      .delete()
+      .eq("id", resourceId)
+      .eq("user_id", userId);
 
   if (error) {
     console.error("deleteResource error:", error);

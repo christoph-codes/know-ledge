@@ -122,11 +122,8 @@ export const deleteResource = async (id: number): Promise<ResultType<void>> => {
     throw new Error("User must be logged in to delete a resource");
   }
 
-  await fetchRender(`/resources/${id}`, {
+  await fetchRender(`/resources/${id}/user/${result.data?.id}`, {
     method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-    },
   });
 
   return {

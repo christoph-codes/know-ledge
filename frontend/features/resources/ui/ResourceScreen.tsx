@@ -12,12 +12,14 @@ import { Toaster } from "sonner";
 export type ResourceScreenProps = {
   resources: Resource[];
   initialTags?: Tag[];
+  userId:number;
 };
 export default function ResourceScreen({
   resources,
   initialTags,
+  userId,
 }: Readonly<ResourceScreenProps>) {
-  const [userId, setUserId] = useState<number | undefined>(); // TODO: @mikecircuitryupdate this to get userId from auth context when available
+  const [userIdToggle, setUserIdToggle] = useState<number | undefined>(undefined); // TODO: @mikecircuitryupdate this to get userId from auth context when available
   const resourceTypes = getResourceTypes();
   const [tags, setTags] = useState<Tag[]>(initialTags ?? []);
   const [selectedResourceTypes, setSelectedResourceTypes] = useState<string[]>(
@@ -48,17 +50,17 @@ export default function ResourceScreen({
   useEffect(() => {
     (async () => {
       const filtered = await filterResources(
-        userId,
+        userIdToggle,
         selectedResourceTypes,
         selectedTags,
         searchTerm
       );
       setFilteredResources(filtered);
     })();
-  }, [searchTerm, selectedResourceTypes, selectedTags, userId]);
+  }, [searchTerm, selectedResourceTypes, selectedTags, userIdToggle]);
 
   const handleUserResourcesClick = () => {
-    setUserId((prev) => (prev === undefined ? 1 : undefined));
+    setUserIdToggle((prev) => (prev === undefined ? userId : undefined));
   };
 
   return (
@@ -81,7 +83,7 @@ export default function ResourceScreen({
             className="w-full mb-5"
             onClick={handleUserResourcesClick}
           >
-            Show {userId == undefined ? "All" : "My"} Resources
+            Showing {userIdToggle == undefined ? "All" : "My"} Resources
           </Button>
           <ResourceFilters
             resourceTypes={resourceTypes}
