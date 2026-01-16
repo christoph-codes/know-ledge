@@ -20,7 +20,7 @@ export const RESOURCE_TYPES = {
   LEARNING: "learning",
   COURSE: "course",
   PODCAST: "podcast",
-} as const;
+};
 
 export type ResourceType = (typeof RESOURCE_TYPES)[keyof typeof RESOURCE_TYPES];
 
@@ -56,7 +56,8 @@ export const RESPONSE_STATUS = {
   ERROR: "error",
 } as const;
 
-export type ResponseStatus = keyof typeof RESPONSE_STATUS;
+export type ResponseStatus =
+  (typeof RESPONSE_STATUS)[keyof typeof RESPONSE_STATUS];
 
 export type ResultType<T> = {
   status: ResponseStatus;
