@@ -20,13 +20,17 @@ export const createResource = async (req: ResourcePayload) => {
       name: userResult.data.name ?? "",
     };
   }
+
   const result = await fetchRender("/resources", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(req),
+    body: JSON.stringify({ payload: req }),
   });
+  if (result.status === RESPONSE_STATUS.ERROR) {
+    throw new Error(result?.message || "Failed to create resource");
+  }
   return { result };
 };
 

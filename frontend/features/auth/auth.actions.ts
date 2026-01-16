@@ -1,37 +1,47 @@
 "use server";
 
 import { RESPONSE_STATUS, ResultType, User } from "@know-ledge/shared";
+import { signIn, signUp, signOut } from "@/shared/server/auth";
+import { redirect } from "next/navigation";
 
-const sampleUser: User = {
-  id: 1,
-  email: "JohnnyTest@example.com",
-  created_at: new Date().toISOString(),
-  name: "Johnny Test",
-};
-
+/**
+ * CRITICAL: Server Action for user sign up
+ *
+ * LEARNING: Server Actions (functions with "use server") let you call server-side
+ * code directly from forms and client components without creating API routes.
+ *
+ * This is called from the SignupScreen component.
+ * After successful signup, redirect to the main app.
+ */
 export const userSignUp = async (
   name: string,
   email: string,
   pass: string
 ): Promise<ResultType<User>> => {
-  console.log(name, email, pass);
+  const result = await signUp(email, pass, name);
 
-  return {
-    status: RESPONSE_STATUS.SUCCESS as keyof typeof RESPONSE_STATUS,
-    message: "User signed up successfully",
-    data: sampleUser,
-  };
+  if (result.status === RESPONSE_STATUS.SUCCESS) {
+    // LEARNING: After successful auth, redirect to protected area
+    // redirect() throws an error to break out of the current render
+    redirect("/resource");
+  }
+
+  return result;
 };
 
 export const loginUser = async (
   email: string,
   pass: string
 ): Promise<ResultType<User>> => {
-  console.log(email, pass);
+  const result = await signIn(email, pass);
 
-  return {
-    status: RESPONSE_STATUS.SUCCESS as keyof typeof RESPONSE_STATUS,
-    message: "User logged in successfully",
-    data: sampleUser,
-  };
+  if (result.status === RESPONSE_STATUS.SUCCESS) {
+    redirect("/resource");
+  }
+
+  return result;
+};
+
+export const logoutUser = async (): Promise<void> => {
+  await signOut();
 };

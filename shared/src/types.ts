@@ -5,6 +5,7 @@ export interface User {
   email: string;
   created_at?: string;
   name?: string;
+  auth_id?: string;
 }
 
 export interface HealthCheckResponse {
@@ -53,9 +54,10 @@ export interface ResourcePayload {
 export const RESPONSE_STATUS = {
   SUCCESS: "success",
   ERROR: "error",
-};
+} as const;
 
-export type ResponseStatus = keyof typeof RESPONSE_STATUS;
+export type ResponseStatus =
+  (typeof RESPONSE_STATUS)[keyof typeof RESPONSE_STATUS];
 
 export type ResultType<T> = {
   status: ResponseStatus;

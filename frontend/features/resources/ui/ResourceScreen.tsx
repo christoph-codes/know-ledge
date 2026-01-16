@@ -2,7 +2,6 @@
 import { Search } from "@/features/resources/ui/Search";
 import { Resource, Tag } from "@know-ledge/shared";
 import { ResourceList } from "@/features/resources/ui/ResourceList";
-import { getResourceTypes, getTags } from "@/features/resources/queries";
 import { ResourceFilters } from "@/features/resources/ui/ResourceFilters";
 import { filterResources } from "@/features/resources/resource.action";
 import { useState, useEffect } from "react";
@@ -12,31 +11,25 @@ import { Toaster } from "sonner";
 export type ResourceScreenProps = {
   resources: Resource[];
   initialTags?: Tag[];
-  userId:number;
+  userId: number;
+  resourceTypes: string[];
 };
 export default function ResourceScreen({
   resources,
   initialTags,
   userId,
+  resourceTypes = [],
 }: Readonly<ResourceScreenProps>) {
-  const [userIdToggle, setUserIdToggle] = useState<number | undefined>(undefined); // TODO: @mikecircuitryupdate this to get userId from auth context when available
-  const resourceTypes = getResourceTypes();
-  const [tags, setTags] = useState<Tag[]>(initialTags ?? []);
-  const [selectedResourceTypes, setSelectedResourceTypes] = useState<string[]>(
-    []
+  const [userIdToggle, setUserIdToggle] = useState<number | undefined>(
+    undefined
   );
+  const [tags] = useState<Tag[]>(initialTags ?? []);
+  const [selectedResourceTypes, setSelectedResourceTypes] =
+    useState<string[]>(resourceTypes);
   const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filteredResources, setFilteredResources] =
     useState<Resource[]>(resources);
-
-  useEffect(() => {
-    const fetchTags = async () => {
-      const fetchedTags = await getTags();
-      setTags(fetchedTags as Tag[]);
-    };
-    fetchTags();
-  }, []);
 
   const handleFiltersChange = async (filters: {
     selectedResourceTypes: string[];
