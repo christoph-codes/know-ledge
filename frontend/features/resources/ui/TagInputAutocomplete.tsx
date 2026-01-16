@@ -52,11 +52,12 @@ export function TagInputAutocomplete({
 
   const norm = (s: string) => s.trim();
 
-  const hasTag = (t: string) =>
-    value.some((x) => x.toLowerCase() === t.toLowerCase());
+  const hasTag = React.useCallback((t: string) =>
+    value.some((x) => x.toLowerCase() === t.toLowerCase()), [value]);
 
   const canAddMore = !maxTags || value.length < maxTags;
-  // Replace the onBlur handler with a more reliable approach
+
+  // More reliable blur handler that doesn't interrupt typing
   const handleInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     // Check if focus is moving to the popover content
     const relatedTarget = e.relatedTarget as HTMLElement;
@@ -64,8 +65,12 @@ export function TagInputAutocomplete({
       return; // Don't close if focus moved to popover
     }
 
-    // Close after a short delay to allow for click events
-    setTimeout(() => setOpen(false), 150);
+    // Only close if we're actually losing focus to something outside the component
+    setTimeout(() => {
+      if (!inputRef.current?.contains(document.activeElement)) {
+        setOpen(false);
+      }
+    }, 100);
   };
 
   const addTag = (raw: string) => {
@@ -93,31 +98,55 @@ export function TagInputAutocomplete({
     queueMicrotask(() => inputRef.current?.focus());
   };
 
+  const clearAllTags = () => {
+    onChange([]);
+    queueMicrotask(() => inputRef.current?.focus());
+  };
+
   // Suggestions filtered by draft and removing already selected tags
   const filtered = React.useMemo(() => {
     const q = draft.toLowerCase();
     return suggestions
       .filter((s) => (q ? s.toLowerCase().includes(q) : true))
       .filter((s) => (allowDuplicates ? true : !hasTag(s)));
-  }, [draft, suggestions, value, allowDuplicates]);
+  }, [draft, suggestions, allowDuplicates, hasTag]);
 
   const onInputKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (e) => {
     if (e.key === "Enter" || e.key === ",") {
       e.preventDefault();
 
-      if (!allowCustom) return;
-
-      addTag(draft);
+      // Try to add the current draft as a tag
+      if (norm(draft)) {
+        addTag(draft);
+      }
       return;
     }
 
-    if (e.key === "Backspace" && !draft && value.length) {
-      removeTag(value.at(-1) ?? "");
+    if (e.key === "Backspace") {
+      // Ctrl/Cmd + Backspace: Clear all tags
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        clearAllTags();
+        return;
+      }
+
+      // Regular Backspace: Remove last tag if input is empty
+      if (!draft && value.length) {
+        removeTag(value.at(-1) ?? "");
+        return;
+      }
+    }
+
+    if (e.key === "Escape") {
+      setOpen(false);
       return;
     }
 
-    // Open dropdown when navigating
-    if (e.key === "ArrowDown") setOpen(true);
+    // Open dropdown when navigating or typing
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      e.preventDefault();
+      setOpen(true);
+    }
   };
 
   return (
@@ -125,10 +154,10 @@ export function TagInputAutocomplete({
       {label ? <div className="text-sm font-medium">{label}</div> : null}
 
       <div className="flex items-stretch gap-2">
-        <Popover open={open && filtered.length > 0} onOpenChange={setOpen}>
+        <Popover open={open && (filtered.length > 0 || (allowCustom && !!norm(draft) && !hasTag(norm(draft))))} onOpenChange={setOpen}>
           <PopoverAnchor asChild>
-            <button
-              type="button"
+            <span role="button"
+              // type="button"
               className={cn(
                 "bg-background flex min-h-10 w-full flex-wrap items-center gap-2 rounded-md border px-3 py-2",
                 "focus-within:ring-ring focus-within:ring-2 focus-within:ring-offset-2"
@@ -161,7 +190,8 @@ export function TagInputAutocomplete({
                 value={draft}
                 onChange={(e) => {
                   setDraft(e.target.value);
-                  setOpen(true);
+                  // Always keep the popover open when typing
+                  if (!open) setOpen(true);
                 }}
                 onFocus={() => setOpen(true)}
                 onBlur={handleInputBlur}
@@ -169,7 +199,7 @@ export function TagInputAutocomplete({
                 placeholder={value.length ? "" : placeholder}
                 className="h-6 w-40 border-0 p-0 shadow-none focus-visible:ring-0"
               />
-            </button>
+            </span>
           </PopoverAnchor>
 
           <PopoverContent
@@ -188,7 +218,9 @@ export function TagInputAutocomplete({
                 placeholder="Search tags…"
               />
               <CommandList>
-                <CommandEmpty>No results.</CommandEmpty>
+                <CommandEmpty>
+                  {allowCustom ? "Type to add a new tag" : "No matching tags found"}
+                </CommandEmpty>
 
                 <CommandGroup>
                   {filtered.map((s) => (
@@ -206,10 +238,10 @@ export function TagInputAutocomplete({
                   ))}
                 </CommandGroup>
 
-                {allowCustom && norm(draft) && !hasTag(norm(draft)) ? (
+                {allowCustom && norm(draft) && !hasTag(norm(draft)) && !suggestions.includes(norm(draft)) ? (
                   <CommandGroup>
-                    <CommandItem onSelect={() => addTag(draft)}>
-                      Add “{norm(draft)}”
+                    <CommandItem onSelect={() => addTag(draft)} className="font-medium">
+                      Create &ldquo;{norm(draft)}&rdquo;
                     </CommandItem>
                   </CommandGroup>
                 ) : null}
