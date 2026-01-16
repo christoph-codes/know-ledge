@@ -1,3 +1,4 @@
+import "server-only";
 import fetchRender from "@/shared/lib/fetchRender";
 import { RESOURCE_TYPES } from "@know-ledge/shared";
 
