@@ -90,25 +90,3 @@ export async function proxy(request: NextRequest) {
 
   return supabaseResponse;
 }
-
-/**
- * CRITICAL: Configure which routes middleware should run on
- *
- * LEARNING: The matcher is a performance optimization.
- * We exclude _next/static, _next/image, favicon.ico, etc. because:
- * - These are static assets that don't need auth
- * - Running middleware on every asset would slow down the app
- * - Auth is only needed for actual pages/API routes
- */
-export const config = {
-  matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * Feel free to modify this pattern based on your needs.
-     */
-    String.raw`/((?!_next/static|_next/image|favicon.ico|.*\.(?:svg|png|jpg|jpeg|gif|webp)$).*)`,
-  ],
-};

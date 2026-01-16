@@ -1,0 +1,19 @@
+
+> know_ledge_frontend@0.1.0 build
+> next build
+
+▲ Next.js 16.1.1 (Turbopack)
+- Environments: .env.local
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 1291.7ms
+  Running TypeScript ...
+  Collecting page data using 11 workers ...
+⨯ Invalid segment configuration export detected. This can cause unexpected behavior from the configs not being applied. You should see the relevant failures in the logs above. Please fix them to continue.
+npm error Lifecycle script `build` failed with error:
+npm error code 1
+npm error path /Users/christopher.jones/projects/know-ledge/frontend
+npm error workspace know_ledge_frontend@0.1.0
+npm error location /Users/christopher.jones/projects/know-ledge/frontend
+npm error command failed
+npm error command sh -c next build

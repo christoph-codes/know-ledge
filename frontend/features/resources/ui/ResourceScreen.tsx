@@ -23,7 +23,7 @@ export default function ResourceScreen({
   const [userIdToggle, setUserIdToggle] = useState<number | undefined>(
     undefined
   );
-  const [tags, setTags] = useState<Tag[]>(initialTags ?? []);
+  const [tags] = useState<Tag[]>(initialTags ?? []);
   const [selectedResourceTypes, setSelectedResourceTypes] =
     useState<string[]>(resourceTypes);
   const [selectedTags, setSelectedTags] = useState<Tag[]>([]);

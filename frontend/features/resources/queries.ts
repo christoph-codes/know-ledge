@@ -2,11 +2,11 @@ import "server-only";
 import fetchRender from "@/shared/lib/fetchRender";
 import { RESOURCE_TYPES } from "@know-ledge/shared";
 
-export const getResourceTypes = (): string[] => {
+export const loadResourceTypes = (): string[] => {
   return Object.values(RESOURCE_TYPES);
 };
 
-export const getTags = async () => {
+export const loadTags = async () => {
   const result = await fetchRender("/tags");
   return result;
 };

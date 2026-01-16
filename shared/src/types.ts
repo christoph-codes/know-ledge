@@ -20,7 +20,7 @@ export const RESOURCE_TYPES = {
   LEARNING: "learning",
   COURSE: "course",
   PODCAST: "podcast",
-};
+} as const;
 
 export type ResourceType = (typeof RESOURCE_TYPES)[keyof typeof RESOURCE_TYPES];
 
@@ -54,7 +54,7 @@ export interface ResourcePayload {
 export const RESPONSE_STATUS = {
   SUCCESS: "success",
   ERROR: "error",
-};
+} as const;
 
 export type ResponseStatus = keyof typeof RESPONSE_STATUS;
 
