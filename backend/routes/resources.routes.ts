@@ -6,6 +6,12 @@ import {
   getResources,
   updateResource,
 } from "../services/resources.service.js";
+import { requireAuth } from "../middleware/auth.js";
+
+interface PatchResourceRoute {
+  Params: { id: string };
+  Body: { payload: ResourcePayload };
+}
 
 export default async function resourcesRoutes(fastify: FastifyInstance) {
   fastify.get("/resources", async (_request, reply) => {
@@ -58,35 +64,46 @@ export default async function resourcesRoutes(fastify: FastifyInstance) {
     }
   });
 
+  // CRITICAL: POST route requires authentication
+  // LEARNING: The { preHandler: requireAuth } option runs authentication before the route handler
   fastify.post(
     "/resources",
+    {
+      preHandler: (request, reply, done) => {
+        console.log("☕️ authenticating request in preHandler");
+        requireAuth(request, reply, done)
+          .then(() => done())
+          .catch(done);
+      },
+    },
     async (
-      request: FastifyRequest<{
-        Body: { payload: ResourcePayload };
-      }>,
-      reply
+      request: FastifyRequest<{ Body: { payload: ResourcePayload } }>,
+      reply: import("fastify").FastifyReply
     ) => {
       try {
-        const { resource, tags = [] } = request.body.payload;
+        const { resource, tags = [], user } = request.body.payload;
+        const newResource = { ...resource, user_id: user?.id };
 
-        await createResource(resource, tags);
+        await createResource(newResource, tags);
         return reply.status(201).send({ status: "success" });
       } catch (err: any) {
-        fastify.log.error({ err });
+        console.error({ err });
         return reply.status(500).send({ error: "Failed to create resource" });
       }
     }
   );
 
-  fastify.patch(
+  fastify.patch<PatchResourceRoute>(
     "/resources/:id",
-    async (
-      request: FastifyRequest<{
-        Params: { id: string };
-        Body: { payload: ResourcePayload };
-      }>,
-      reply
-    ) => {
+    {
+      preHandler: (request, reply, done) => {
+        console.log("☕️ authenticating request in preHandler");
+        requireAuth(request, reply, done)
+          .then(() => done())
+          .catch(done);
+      },
+    },
+    async (request, reply) => {
       try {
         const resourceId = Number(request.params.id);
         const { payload } = request.body;
@@ -102,14 +119,19 @@ export default async function resourcesRoutes(fastify: FastifyInstance) {
     }
   );
 
-  fastify.delete(
+  fastify.delete<{
+    Params: { id: string; userId: string };
+  }>(
     "/resources/:id/user/:userId",
-    async (
-      request: FastifyRequest<{
-        Params: { id: string, userId: string };
-      }>,
-      reply
-    ) => {
+    {
+      preHandler: (request, reply, done) => {
+        console.log("❌ authenticating request in preHandler");
+        requireAuth(request, reply, done)
+          .then(() => done())
+          .catch(done);
+      },
+    },
+    async (request, reply) => {
       try {
         const resourceId = Number(request.params.id);
         const userId = Number(request.params.userId);

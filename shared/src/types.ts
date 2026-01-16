@@ -5,6 +5,7 @@ export interface User {
   email: string;
   created_at?: string;
   name?: string;
+  auth_id?: string;
 }
 
 export interface HealthCheckResponse {

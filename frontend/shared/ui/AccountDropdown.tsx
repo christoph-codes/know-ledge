@@ -7,10 +7,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/shared/ui/dropdown-menu";
-import { Bookmark, CircleUser, LogOutIcon } from "lucide-react";
+import { Bookmark, CircleUser } from "lucide-react";
 import { getCurrentUser } from "@/shared/server/auth";
 import { RESPONSE_STATUS } from "@know-ledge/shared";
+import { LogoutButton } from "./LogoutButton";
 
+/**
+ * LEARNING: Server Component that displays user info
+ * Uses getCurrentUser() to fetch authenticated user server-side
+ */
 export const UserDropdown = async () => {
   const result = await getCurrentUser();
   const name =
@@ -21,8 +26,9 @@ export const UserDropdown = async () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        {/*<Button variant="outline">Open</Button>*/}
-        <div className={"flex items-center justify-center gap-2"}>
+        <div
+          className={"flex items-center justify-center gap-2 cursor-pointer"}
+        >
           <CircleUser size={35} />
           <p className={"text-xl"}>{name}</p>
         </div>
@@ -34,14 +40,7 @@ export const UserDropdown = async () => {
           <DropdownMenuItem>
             <Bookmark /> Your Shared Resources
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            <a
-              href={"http://localhost:3000/api/auth/logout"}
-              className={"flex items-center gap-2"}
-            >
-              <LogOutIcon /> Log out
-            </a>
-          </DropdownMenuItem>
+          <LogoutButton />
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>

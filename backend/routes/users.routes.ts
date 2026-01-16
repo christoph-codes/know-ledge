@@ -11,6 +11,7 @@ export default async function usersRoutes(fastify: FastifyInstance) {
       return reply.send(users.data);
     }
   );
+  // CRITICAL: POST route requires authentication
   fastify.post(
     "/users",
     async (
@@ -18,45 +19,33 @@ export default async function usersRoutes(fastify: FastifyInstance) {
       reply: FastifyReply
     ) => {
       console.log("📝 creating user");
-      const { userDetails } = request.body;
+      const userDetails = request.body.userDetails;
+
       const newUser = await supabase.from("users").insert([userDetails]);
       if (newUser.status !== 201) {
-        return reply.status(400).send({
-          error: newUser.error ?? "Failed to create user",
-        });
+        console.log("error", newUser.error);
+        throw new Error(newUser.error?.message ?? "Failed to create user");
       }
       return reply.send(newUser.statusText);
     }
   );
-  fastify.patch(
-    "/users/:id",
-    async (
-      request: FastifyRequest<{
-        Params: { id: string };
-        Body: { userDetails: Partial<User> };
-      }>,
-      reply: FastifyReply
-    ) => {
-      console.log("✏️ updating user");
-      const { id } = request.params;
-      const { userDetails } = request.body;
-      const updatedUser = await supabase
+
+  fastify.get(
+    "/users/:auth_id",
+    async (request: FastifyRequest<{ Params: { auth_id: string } }>, reply) => {
+      const auth_id = request.params.auth_id;
+
+      const users = await supabase
         .from("users")
-        .update(userDetails)
-        .eq("id", id);
-      return reply.send(updatedUser.data);
-    }
-  );
-  fastify.delete(
-    "/users/:id",
-    async (
-      request: FastifyRequest<{ Params: { id: string } }>,
-      reply: FastifyReply
-    ) => {
-      console.log("🗑 deleting user");
-      const { id } = request.params;
-      const deletedUser = await supabase.from("users").delete().eq("id", id);
-      return reply.send(deletedUser.statusText);
+        .select("*")
+        .eq("auth_id", auth_id)
+        .single();
+      if (users.error) {
+        throw new Error(
+          users.error?.message ?? "Failed to get user by auth_id"
+        );
+      }
+      return reply.send(users.data as User);
     }
   );
 }

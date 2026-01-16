@@ -78,6 +78,10 @@ export const createResource = async (
     throw new Error("Invalid resource type");
   }
 
+  if (!newResource.user_id) {
+    throw new Error("Missing user_id for resource");
+  }
+
   // 1) Create the resource and return the inserted row (including id)
   const { data: createdResources, error: createErr } = await supabase
     .from("resources")
